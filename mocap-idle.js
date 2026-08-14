@@ -77,46 +77,54 @@ export function curlAllFingers(degrees) {
 }
 
 export const CUSTOM_IDLE_POSE = {
-    "Hips": [-0.001, 0, 0, 1],
-    "Spine": [-0.0106, 0, 0, 0.9999],
-    "LeftShoulder": [0.5154, 0.5155, -0.484, 0.4841],
-    "LeftArm": [0.6155, 0.1007, 0.1618, 0.7647],
-    "LeftForeArm": [0.146, 0.1877, -0.1011, 0.966],
-    "LeftHand": [0.0059, 0.001, -0.0107, 0.9999],
-    "LeftHandIndex1": [0.032, -0.0026, 0.1823, 0.9827],
-    "LeftHandIndex2": [-0.01, 0.0147, 0.1294, 0.9914],
-    "LeftHandIndex3": [-0.0002, 0.0005, 0.1278, 0.9918],
-    "LeftHandMiddle1": [0.0185, -0.0176, 0.1366, 0.9903],
-    "LeftHandMiddle2": [0.0017, -0.0022, 0.132, 0.9912],
-    "LeftHandMiddle3": [-0.0125, 0.0164, 0.1262, 0.9918],
-    "LeftHandPinky1": [-0.0095, -0.0405, 0.0871, 0.9953],
-    "LeftHandPinky2": [0.0101, -0.0118, 0.1334, 0.9909],
-    "LeftHandPinky3": [0.0079, -0.0089, 0.1361, 0.9906],
-    "LeftHandRing1": [0.0092, -0.0289, 0.1017, 0.9944],
-    "LeftHandRing2": [0.0017, -0.0019, 0.1349, 0.9909],
-    "LeftHandRing3": [-0.0109, 0.0138, 0.134, 0.9908],
-    "LeftHandThumb1": [0.1297, -0.0251, 0.4398, 0.8883],
-    "LeftHandThumb2": [0.0592, 0.0426, -0.2047, 0.9761],
-    "LeftHandThumb3": [-0.0276, 0.07, 0.0783, 0.9941],
-    "RightShoulder": [0.5155, -0.5154, 0.4841, 0.484],
-    "RightArm": [-0.628, 0.0989, 0.1572, -0.7557],
-    "RightForeArm": [-0.0013, -0.1522, -0.1401, 0.9784],
-    "RightHand": [0.0059, -0.001, 0.0107, 0.9999],
-    "RightHandIndex1": [0.032, 0.0026, -0.1823, 0.9827],
-    "RightHandIndex2": [-0.01, -0.0147, -0.1294, 0.9914],
-    "RightHandIndex3": [-0.0002, -0.0005, -0.1278, 0.9918],
-    "RightHandMiddle1": [0.0185, 0.0176, -0.1366, 0.9903],
-    "RightHandMiddle2": [0.0017, 0.0022, -0.132, 0.9912],
-    "RightHandMiddle3": [-0.0125, -0.0164, -0.1262, 0.9918],
-    "RightHandPinky1": [-0.0095, 0.0405, -0.0871, 0.9953],
-    "RightHandPinky2": [0.0101, 0.0118, -0.1334, 0.9909],
-    "RightHandPinky3": [0.0079, 0.0089, -0.1361, 0.9906],
-    "RightHandRing1": [0.0092, 0.0289, -0.1017, 0.9944],
-    "RightHandRing2": [0.0017, 0.0019, -0.1349, 0.9909],
-    "RightHandRing3": [-0.0109, -0.0138, -0.134, 0.9908],
-    "RightHandThumb1": [0.1393, 0.0045, -0.3219, 0.9365],
-    "RightHandThumb2": [0.0614, -0.0481, 0.3291, 0.9411],
-    "RightHandThumb3": [-0.0281, -0.0665, 0.0511, 0.9961]
+    "LeftShoulder": [0, 0, 0, 1],
+    "RightShoulder": [0, 0, 0, 1],
+    "LeftArm": [0.0001, 0.0163, 0.6258, 0.7798],
+    "LeftForeArm": [-0.0934, -0.0762, -0.0024, 0.9927],
+    "RightArm": [0.0001, -0.018, -0.6367, 0.7709],
+    "RightForeArm": [0.0934, -0.0762, -0.0024, -0.9927],
+    "LeftHand": [0, 0, 0, 1],
+    "RightHand": [0, 0, 0, 1],
+    "Neck": [0, 0, 0, 1],
+    "Head": [0, 0, 0, 1],
+    "Spine": [0, 0, 0, 1],
+    "Hips": [0, 0, 0, 1],
+    "LeftUpLeg": [0, 0, 0, 1],
+    "LeftLeg": [0, 0, 0, 1],
+    "LeftFoot": [0, 0, 0, 1],
+    "RightUpLeg": [0, 0, 0, 1],
+    "RightLeg": [0, 0, 0, 1],
+    "RightFoot": [0, 0, 0, 1],
+    "LeftHandThumb1": [0, 0.0216, 0.0216, 0.9995],
+    "LeftHandThumb2": [0, 0.0216, 0.0216, 0.9995],
+    "LeftHandThumb3": [0, 0.0216, 0.0216, 0.9995],
+    "LeftHandIndex1": [0, 0, 0.0436, 0.999],
+    "LeftHandIndex2": [0, 0, 0.0436, 0.999],
+    "LeftHandIndex3": [0, 0, 0.0436, 0.999],
+    "LeftHandMiddle1": [0, 0, 0.0436, 0.999],
+    "LeftHandMiddle2": [0, 0, 0.0436, 0.999],
+    "LeftHandMiddle3": [0, 0, 0.0436, 0.999],
+    "LeftHandRing1": [0, 0, 0.0436, 0.999],
+    "LeftHandRing2": [0, 0, 0.0436, 0.999],
+    "LeftHandRing3": [0, 0, 0.0436, 0.999],
+    "LeftHandPinky1": [0, 0, 0.0436, 0.999],
+    "LeftHandPinky2": [0, 0, 0.0436, 0.999],
+    "LeftHandPinky3": [0, 0, 0.0436, 0.999],
+    "RightHandThumb1": [0, -0.0216, 0.0216, 0.9995],
+    "RightHandThumb2": [0, -0.0216, 0.0216, 0.9995],
+    "RightHandThumb3": [0, -0.0216, 0.0216, 0.9995],
+    "RightHandIndex1": [0, 0, -0.0436, 0.999],
+    "RightHandIndex2": [0, 0, -0.0436, 0.999],
+    "RightHandIndex3": [0, 0, -0.0436, 0.999],
+    "RightHandMiddle1": [0, 0, -0.0436, 0.999],
+    "RightHandMiddle2": [0, 0, -0.0436, 0.999],
+    "RightHandMiddle3": [0, 0, -0.0436, 0.999],
+    "RightHandRing1": [0, 0, -0.0436, 0.999],
+    "RightHandRing2": [0, 0, -0.0436, 0.999],
+    "RightHandRing3": [0, 0, -0.0436, 0.999],
+    "RightHandPinky1": [0, 0, -0.0436, 0.999],
+    "RightHandPinky2": [0, 0, -0.0436, 0.999],
+    "RightHandPinky3": [0, 0, -0.0436, 0.999]
 };
 
 export function applyIdlePose() {
@@ -135,29 +143,14 @@ export function applyIdlePose() {
     // Force update world matrices of the model so alignBoneInstant reads fresh parent orientations
     state.model.updateMatrixWorld(true);
 
-    if (state.vrm) {
-        // VRM Idle Pose: Lower arms naturally using directions
-        const baseLeftArm = new THREE.Vector3(-1, 0, 0);
-        const baseRightArm = new THREE.Vector3(1, 0, 0);
-        
-        alignBoneInstant(state.mappedAvatarBones.LeftArm, IDLE_ARM_DIRECTIONS.LeftArm, baseLeftArm);
-        alignBoneInstant(state.mappedAvatarBones.LeftForeArm, IDLE_ARM_DIRECTIONS.LeftForeArm, baseLeftArm);
-        
-        alignBoneInstant(state.mappedAvatarBones.RightArm, IDLE_ARM_DIRECTIONS.RightArm, baseRightArm);
-        alignBoneInstant(state.mappedAvatarBones.RightForeArm, IDLE_ARM_DIRECTIONS.RightForeArm, baseRightArm);
-        
-        // Curl fingers slightly for natural hands
-        curlAllFingers(5);
-    } else {
-        // Apply the custom idle pose quaternions captured by the user
-        Object.keys(CUSTOM_IDLE_POSE).forEach(boneName => {
-            const bone = state.mappedAvatarBones[boneName];
-            if (bone) {
-                const q = CUSTOM_IDLE_POSE[boneName];
-                bone.quaternion.set(q[0], q[1], q[2], q[3]);
-            }
-        });
-    }
+    // Apply the custom default idle pose quaternions
+    Object.keys(CUSTOM_IDLE_POSE).forEach(boneName => {
+        const bone = state.mappedAvatarBones[boneName];
+        if (bone) {
+            const q = CUSTOM_IDLE_POSE[boneName];
+            bone.quaternion.set(q[0], q[1], q[2], q[3]);
+        }
+    });
 
     state.bones.forEach(b => b.updateMatrixWorld(true));
 }
