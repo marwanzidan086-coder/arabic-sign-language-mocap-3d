@@ -84,8 +84,8 @@ export function setupScene() {
     const floorGeo = new THREE.PlaneGeometry(35, 35);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.15,
-        metalness: 0.1,
+        roughness: 0.2,
+        metalness: 0.05,
         color: 0xffffff
     });
     state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
@@ -94,34 +94,9 @@ export function setupScene() {
     state.whiteTilesFloor.receiveShadow = true;
     state.scene.add(state.whiteTilesFloor);
 
-    // Reflective Glass Mirror Center Podium (Reflector on top of white tiles)
-    try {
-        const mirrorGeo = new THREE.CircleGeometry(3.5, 64);
-        state.groundMirror = new Reflector(mirrorGeo, {
-            clipBias: 0.003,
-            textureWidth: Math.min(window.innerWidth * window.devicePixelRatio, 2048),
-            textureHeight: Math.min(window.innerHeight * window.devicePixelRatio, 2048),
-            color: 0xa8b8c4,
-            multisample: 2
-        });
-        state.groundMirror.position.y = 0.001;
-        state.groundMirror.rotation.x = -Math.PI / 2;
-        state.scene.add(state.groundMirror);
-
-        // Glass Rim Ring
-        const ringGeo = new THREE.RingGeometry(3.45, 3.5, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
-        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-        ringMesh.rotation.x = -Math.PI / 2;
-        ringMesh.position.y = 0.002;
-        state.scene.add(ringMesh);
-    } catch (e) {
-        console.warn("Reflector fallback:", e);
-    }
-
     // Grid (Subtle Crisp Grid Overlay)
-    state.floorGrid = new THREE.GridHelper(30, 30, 0x0ea5e9, 0xcbd5e1);
-    state.floorGrid.position.y = 0.003;
+    state.floorGrid = new THREE.GridHelper(30, 30, 0x38bdf8, 0xcbd5e1);
+    state.floorGrid.position.y = 0.001;
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
 
