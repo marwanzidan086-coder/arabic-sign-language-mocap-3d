@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التعرف على لغة الإشارة العربية والتحكم في الأفاتار</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: #060713;
+            font-family: 'Cairo', sans-serif;
+            direction: rtl;
+            color: #e2e8f0;
+        }
+
+        /* Loading Overlay */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0f1026 0%, #060713 100%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 240, 255, 0.1);
+            border-left-color: #00f0ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #00f0ff;
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        }
+
+        .loader-error {
+            margin-top: 20px;
+            background: rgba(255, 0, 85, 0.1);
+            border: 1px solid #ff0055;
+            padding: 20px;
+            border-radius: 12px;
+            color: #ff3366;
+            max-width: 450px;
+            text-align: center;
+            line-height: 1.6;
+            display: none;
+            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.2);
+        }
+
+        /* Connection Badge */
+        #conn-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #conn-badge::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        #conn-badge.connected {
+            background: rgba(0, 255, 135, 0.15);
+            color: #00ff87;
+            border: 1px solid rgba(0, 255, 135, 0.3);
+        }
+
+        #conn-badge.connected::before {
+            background: #00ff87;
+            box-shadow: 0 0 8px #00ff87;
+        }
+
+        #conn-badge.disconnected {
+            background: rgba(255, 0, 85, 0.15);
+            color: #ff3366;
+            border: 1px solid rgba(255, 0, 85, 0.3);
+        }
+
+        #conn-badge.disconnected::before {
+            background: #ff3366;
+            box-shadow: 0 0 8px #ff3366;
+        }
+
+        /* Sign Panel */
+        #sign-panel {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background: rgba(10, 11, 28, 0.65);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 240, 255, 0.15);
+            padding: 18px 50px;
+            border-radius: 16px;
+            color: #ffffff;
+            font-size: 52px;
+            font-weight: 800;
+            text-align: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #sign-panel.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Debug Panel */
+        #debug-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 290px;
+            background: rgba(10, 11, 28, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border-radius: 14px;
+            padding: 16px;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        .debug-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #00f0ff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .debug-mode {
+            font-size: 11px;
+            font-weight: 700;
+            color: #ffaa00;
+            background: rgba(255, 170, 0, 0.15);
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 170, 0, 0.2);
+        }
+
+        .debug-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .debug-label {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .debug-value {
+            color: #ffffff;
+            font-weight: bold;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Canvas Container */
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Instructions overlay */
+        .instruction-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(10, 11, 28, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 12px 20px;
+            z-index: 10;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            direction: rtl;
+        }
+    </style>
+
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loader-text">جاري تحميل مجسم الأفاتار...</div>
+        <div class="loader-error"></div>
+    </div>
+
+    <!-- Connection Badge -->
+    <div id="conn-badge" class="disconnected">غير متصل</div>
+
+    <!-- Sign Language Result Panel -->
+    <div id="sign-panel">مرحبا</div>
+
+    <!-- Live Debug Dashboard -->
+    <div id="debug-panel">
+        <div class="debug-title">
+            <span>لوحة التحكم والمراقبة</span>
+            <span id="debug-mode" class="debug-mode">انتظار...</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">ارتفاع الكتف الأيسر:</span>
+            <span class="debug-value" id="val-l-shoulder">0°</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">انحناء الكوع الأيسر:</span>
+            <span class="debug-value" id="val-l-elbow">0°</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">ارتفاع الكتف الأيمن:</span>
+            <span class="debug-value" id="val-r-shoulder">0°</span>
+        </div>
+        <div class="debug-row">
+            <span class="debug-label">انحناء الكوع الأيمن:</span>
+            <span class="debug-value" id="val-r-elbow">0°</span>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instruction-box">
+        💡 اسحب الفأرة لتدوير الكاميرا، واستخدم العجلة للتكبير والتصغير.
+    </div>
+
+    <!-- Canvas for 3D viewport -->
+    <div id="canvas-container"></div>
+
+    <!-- Application Script -->
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        const deg = (val) => THREE.MathUtils.degToRad(val);
+
+        class AvatarController {
+            constructor() {
+                this.bones = {};
+                this.model = null;
+                this.boneMap = {
+                    left_arm: 'mixamorig:LeftArm',
+                    left_forearm: 'mixamorig:LeftForeArm',
+                    left_hand: 'mixamorig:LeftHand',
+                    right_arm: 'mixamorig:RightArm',
+                    right_forearm: 'mixamorig:RightForeArm',
+                    right_hand: 'mixamorig:RightHand',
+                    spine: 'mixamorig:Spine',
+                    neck: 'mixamorig:Neck',
+                    head: 'mixamorig:Head'
+                };
+            }
+
+            async load(url, scene) {
+                const loader = new GLTFLoader();
+                console.log(`[Avatar] Loading model from path: ${url}`);
+                return new Promise((resolve, reject) => {
+                    loader.load(url, (gltf) => {
+                        this.model = gltf.scene;
+                        
+                        this.model.traverse((child) => {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                            }
+                            if (child.isBone) {
+                                this.bones[child.name] = child;
+                                // Robust index (no prefix and lowercase)
+                                const cleanName = child.name.replace('mixamorig:', '').toLowerCase();
+                                this.bones[cleanName] = child;
+                            }
+                        });
+
+                        scene.add(this.model);
+                        console.log(`[Avatar] Bones mapped:`, Object.keys(this.bones));
+                        resolve(gltf);
+                    }, undefined, (error) => {
+                        reject(error);
+                    });
+                });
+            }
+
+            applyPose(pose) {
+                if (!pose || !pose.landmarks) return;
+                
+                const lms = {};
+                // 1) Invert axes: x = -x (fix left/right), z = -z (fix forward/backward)
+                for (const [name, pt] of Object.entries(pose.landmarks)) {
+                    lms[name] = new THREE.Vector3(-pt.x, pt.y, -pt.z);
+                }
+
+                // Fetch upper body joints
+                const l_shoulder = lms.left_shoulder;
+                const l_elbow = lms.left_elbow;
+                const l_wrist = lms.left_wrist;
+                const r_shoulder = lms.right_shoulder;
+                const r_elbow = lms.right_elbow;
+                const r_wrist = lms.right_wrist;
+
+                if (!l_shoulder || !l_elbow || !l_wrist || !r_shoulder || !r_elbow || !r_wrist) return;
+
+                // Let's get references to the avatar bones
+                const leftArm = this.bones[this.boneMap.left_arm] || this.bones['leftarm'];
+                const leftForearm = this.bones[this.boneMap.left_forearm] || this.bones['leftforearm'];
+                const rightArm = this.bones[this.boneMap.right_arm] || this.bones['rightarm'];
+                const rightForearm = this.bones[this.boneMap.right_forearm] || this.bones['rightforearm'];
+
+                // Helper to apply LookRotation and update matrix
+                const parentWorldQ = new THREE.Quaternion();
+                const localQ = new THREE.Quaternion();
+                const hingeAxis = new THREE.Vector3(0, 0, 1);
+
+                if (!this.prevQuats) this.prevQuats = {};
+
+                // --- LEFT ARM ---
+                if (leftArm && leftForearm) {
+                    // Calculate direction vectors between joints
+                    const dirArmL = new THREE.Vector3().subVectors(l_elbow, l_shoulder).normalize();
+                    const dirForearmL = new THREE.Vector3().subVectors(l_wrist, l_elbow).normalize();
+
+                    // Calculate bend plane normal
+                    let normalL = new THREE.Vector3().crossVectors(dirArmL, dirForearmL);
+                    if (normalL.lengthSq() < 1e-5) {
+                        const temp = Math.abs(dirArmL.y) > 0.9 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
+                        normalL.crossVectors(dirArmL, temp).normalize();
+                    } else {
+                        normalL.normalize();
+                    }
+
+                    // Look rotation for upper arm (left side default extends along -X in T-pose)
+                    const targetXL = dirArmL.clone().negate();
+                    const targetZL = normalL.clone();
+                    const targetYL = new THREE.Vector3().crossVectors(targetZL, targetXL).normalize();
+
+                    const basisM_L = new THREE.Matrix4().makeBasis(targetXL, targetYL, targetZL);
+                    const targetWorldQL = new THREE.Quaternion().setFromRotationMatrix(basisM_L);
+
+                    // Convert to local rotation
+                    if (leftArm.parent) {
+                        leftArm.parent.getWorldQuaternion(parentWorldQ);
+                        localQ.copy(parentWorldQ).invert().multiply(targetWorldQL);
+                    } else {
+                        localQ.copy(targetWorldQL);
+                    }
+
+                    // Smooth movement: rotation = Lerp(previous, current, 0.3) via slerp
+                    const boneNameL = this.boneMap.left_arm;
+                    if (!this.prevQuats[boneNameL]) {
+                        this.prevQuats[boneNameL] = localQ.clone();
+                    } else {
+                        this.prevQuats[boneNameL].slerp(localQ, 0.3);
+                        localQ.copy(this.prevQuats[boneNameL]);
+                    }
+                    leftArm.quaternion.copy(localQ);
+                    leftArm.updateMatrixWorld(true);
+
+                    // Clamp elbow rotation (0 to 145 degrees) to prevent unnatural bending
+                    let bendL = dirArmL.angleTo(dirForearmL);
+                    bendL = Math.max(0, Math.min(bendL, deg(145)));
+
+                    // Apply to forearm (left elbow bends negatively around local Z-axis in Mixamo)
+                    const forearmLocalQ = new THREE.Quaternion().setFromAxisAngle(hingeAxis, bendL);
+                    
+                    const forearmBoneName = this.boneMap.left_forearm;
+                    if (!this.prevQuats[forearmBoneName]) {
+                        this.prevQuats[forearmBoneName] = forearmLocalQ.clone();
+                    } else {
+                        this.prevQuats[forearmBoneName].slerp(forearmLocalQ, 0.3);
+                        forearmLocalQ.copy(this.prevQuats[forearmBoneName]);
+                    }
+                    leftForearm.quaternion.copy(forearmLocalQ);
+                    leftForearm.updateMatrixWorld(true);
+                }
+
+                // --- RIGHT ARM ---
+                if (rightArm && rightForearm) {
+                    // Calculate direction vectors between joints
+                    const dirArmR = new THREE.Vector3().subVectors(r_elbow, r_shoulder).normalize();
+                    const dirForearmR = new THREE.Vector3().subVectors(r_wrist, r_elbow).normalize();
+
+                    // Calculate bend plane normal
+                    let normalR = new THREE.Vector3().crossVectors(dirArmR, dirForearmR);
+                    if (normalR.lengthSq() < 1e-5) {
+                        const temp = Math.abs(dirArmR.y) > 0.9 ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(0, 1, 0);
+                        normalR.crossVectors(dirArmR, temp).normalize();
+                    } else {
+                        normalR.normalize();
+                    }
+
+                    // Look rotation for upper arm (right side default extends along +X in T-pose)
+                    const targetXR = dirArmR.clone();
+                    const targetZR = normalR.clone();
+                    const targetYR = new THREE.Vector3().crossVectors(targetZR, targetXR).normalize();
+
+                    const basisM_R = new THREE.Matrix4().makeBasis(targetXR, targetYR, targetZR);
+                    const targetWorldQR = new THREE.Quaternion().setFromRotationMatrix(basisM_R);
+
+                    // Convert to local rotation
+                    if (rightArm.parent) {
+                        rightArm.parent.getWorldQuaternion(parentWorldQ);
+                        localQ.copy(parentWorldQ).invert().multiply(targetWorldQR);
+                    } else {
+                        localQ.copy(targetWorldQR);
+                    }
+
+                    // Smooth movement: rotation = Lerp(previous, current, 0.3) via slerp
+                    const boneNameR = this.boneMap.right_arm;
+                    if (!this.prevQuats[boneNameR]) {
+                        this.prevQuats[boneNameR] = localQ.clone();
+                    } else {
+                        this.prevQuats[boneNameR].slerp(localQ, 0.3);
+                        localQ.copy(this.prevQuats[boneNameR]);
+                    }
+                    rightArm.quaternion.copy(localQ);
+                    rightArm.updateMatrixWorld(true);
+
+                    // Clamp elbow rotation (0 to 145 degrees) to prevent unnatural bending
+                    let bendR = dirArmR.angleTo(dirForearmR);
+                    bendR = Math.max(0, Math.min(bendR, deg(145)));
+
+                    // Apply to forearm (right elbow bends positively around local Z-axis in Mixamo)
+                    const forearmLocalQ = new THREE.Quaternion().setFromAxisAngle(hingeAxis, bendR);
+
+                    const forearmBoneName = this.boneMap.right_forearm;
+                    if (!this.prevQuats[forearmBoneName]) {
+                        this.prevQuats[forearmBoneName] = forearmLocalQ.clone();
+                    } else {
+                        this.prevQuats[forearmBoneName].slerp(forearmLocalQ, 0.3);
+                        forearmLocalQ.copy(this.prevQuats[forearmBoneName]);
+                    }
+                    rightForearm.quaternion.copy(forearmLocalQ);
+                    rightForearm.updateMatrixWorld(true);
+                }
+            }
+
+            applyAnimFrame(frame) {
+                for (const [key, rot] of Object.entries(frame)) {
+                    const boneName = this.boneMap[key];
+                    const bone = this.bones[boneName] || this.bones[key.replace('_', '').toLowerCase()];
+                    if (bone) {
+                        bone.rotation.set(deg(rot.x), deg(rot.y), deg(rot.z), 'XYZ');
+                    }
+                }
+            }
+        }
+
+        class WSClient {
+            constructor(url, onMessageCallback) {
+                this.url = url;
+                this.onMessage = onMessageCallback;
+                this.ws = null;
+                this.connect();
+            }
+
+            connect() {
+                console.log(`[WS] Connecting to WebSocket: ${this.url}`);
+                this.ws = new WebSocket(this.url);
+
+                this.ws.onopen = () => {
+                    console.log(`[WS] Connection established successfully.`);
+                    const badge = document.getElementById('conn-badge');
+                    badge.className = 'connected';
+                    badge.textContent = 'متصل';
+                };
+
+                this.ws.onclose = () => {
+                    console.log(`[WS] Connection closed. Retrying in 2000ms...`);
+                    const badge = document.getElementById('conn-badge');
+                    badge.className = 'disconnected';
+                    badge.textContent = 'غير متصل';
+                    document.getElementById('debug-mode').textContent = 'غير متصل';
+                    setTimeout(() => this.connect(), 2000);
+                };
+
+                this.ws.onerror = (err) => {
+                    console.error(`[WS] WebSocket error:`, err);
+                };
+
+                this.ws.onmessage = (event) => {
+                    try {
+                        const parsed = JSON.parse(event.data);
+                        this.onMessage(parsed);
+                    } catch (err) {
+                        console.error(`[WS] Error parsing JSON frame:`, err);
+                    }
+                };
+            }
+        }
+
+        // Initialize 3D Engine
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color('#060713');
+        scene.fog = new THREE.FogExp2('#060713', 0.18);
+
+        const camera = new THREE.PerspectiveCamera(42, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(0, 1.4, 3.8);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.target.set(0, 0.9, 0);
+        controls.update();
+
+        // Scene Lights setup
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+        scene.add(ambientLight);
+
+        const keyLight = new THREE.DirectionalLight(0xffffff, 1.1);
+        keyLight.position.set(2, 4, 3);
+        keyLight.castShadow = true;
+        keyLight.shadow.mapSize.width = 1024;
+        keyLight.shadow.mapSize.height = 1024;
+        keyLight.shadow.bias = -0.001;
+        scene.add(keyLight);
+
+        const fillLight = new THREE.PointLight(0x00a0ff, 0.8, 10);
+        fillLight.position.set(-2, 1, 2);
+        scene.add(fillLight);
+
+        const backLight = new THREE.PointLight(0xff5500, 0.6, 10);
+        backLight.position.set(0, 2, -2);
+        scene.add(backLight);
+
+        // Ground Plane Setup
+        const groundGeo = new THREE.PlaneGeometry(20, 20);
+        const groundMat = new THREE.MeshStandardMaterial({ 
+            color: 0x0c0d21, 
+            roughness: 0.8, 
+            metalness: 0.1 
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Grid helper
+        const gridHelper = new THREE.GridHelper(20, 20, 0x00f0ff, 0x11122a);
+        gridHelper.position.y = 0.005;
+        scene.add(gridHelper);
+
+        // Instantiate Avatar and Loader
+        const avatar = new AvatarController();
+        avatar.load('avatar.glb', scene)
+            .then(() => {
+                // Hide loading overlay
+                const loader = document.getElementById('loader');
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            })
+            .catch((error) => {
+                console.error("[Avatar] Load error:", error);
+                const text = document.querySelector('.loader-text');
+                const errBox = document.querySelector('.loader-error');
+                if (text) text.style.display = 'none';
+                if (errBox) {
+                    errBox.style.display = 'block';
+                    errBox.innerHTML = `
+                        <strong>فشل تحميل ملف الشخصية ثلاثية الأبعاد (avatar.glb)</strong><br><br>
+                        الرجاء التأكد من وجود ملف الأفاتار باسم <code>avatar.glb</code> (بتنسيق Mixamo) داخل مجلد <code>frontend/</code> ثم قم بتحديث الصفحة.
+                    `;
+                }
+            });
+
+        // Sign Display Control
+        let signTimeout = null;
+        function showSign(word) {
+            const panel = document.getElementById('sign-panel');
+            panel.textContent = word;
+            panel.classList.add('show');
+            
+            if (signTimeout) clearTimeout(signTimeout);
+            signTimeout = setTimeout(() => {
+                panel.classList.remove('show');
+            }, 3000);
+        }
+
+        // Handle Messages from Python Backend
+        function onMessage(data) {
+            const debugMode = document.getElementById('debug-mode');
+            const debugLShoulder = document.getElementById('val-l-shoulder');
+            const debugLElbow = document.getElementById('val-l-elbow');
+            const debugRShoulder = document.getElementById('val-r-shoulder');
+            const debugRElbow = document.getElementById('val-r-elbow');
+
+            if (data.animating && data.anim_frame) {
+                avatar.applyAnimFrame(data.anim_frame);
+                debugMode.textContent = 'رسوم متحركة 🎬';
+            } else if (data.pose && data.pose.landmarks) {
+                const angles = data.pose.angles || {};
+                avatar.applyPose(data.pose);
+                
+                // Update live debug monitor
+                debugLShoulder.textContent = Math.round(angles.left_shoulder_elevation || 0) + '°';
+                debugLElbow.textContent = Math.round(angles.left_elbow_bend || 0) + '°';
+                debugRShoulder.textContent = Math.round(angles.right_shoulder_elevation || 0) + '°';
+                debugRElbow.textContent = Math.round(angles.right_elbow_bend || 0) + '°';
+                
+                debugMode.textContent = 'مباشر 📷';
+            } else {
+                debugMode.textContent = 'مباشر (لا توجد حركة)';
+            }
+
+            if (data.detected_sign && data.sign_word) {
+                showSign(data.sign_word);
+            }
+        }
+
+        // Connect to local python server
+        const wsClient = new WSClient('ws://localhost:8765', onMessage);
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+
+        // Render animation loop
+        function animateScene() {
+            requestAnimationFrame(animateScene);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animateScene();
+    </script>
+</body>
+</html>

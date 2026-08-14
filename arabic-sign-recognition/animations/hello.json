@@ -1,0 +1,14 @@
+{
+  "name": "hello",
+  "arabic_word": "مرحبا",
+  "fps": 30,
+  "frames": [
+    { "frame": 0,  "bones": { "right_arm": {"x":0,"y":0,"z":-10}, "right_forearm": {"x":0,"y":0,"z":0},  "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 5,  "bones": { "right_arm": {"x":0,"y":0,"z":-75}, "right_forearm": {"x":0,"y":0,"z":20}, "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 10, "bones": { "right_arm": {"x":0,"y":12,"z":-85},"right_forearm": {"x":0,"y":0,"z":45}, "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 15, "bones": { "right_arm": {"x":0,"y":-12,"z":-85},"right_forearm":{"x":0,"y":0,"z":45}, "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 20, "bones": { "right_arm": {"x":0,"y":12,"z":-85},"right_forearm": {"x":0,"y":0,"z":45}, "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 25, "bones": { "right_arm": {"x":0,"y":0,"z":-35},"right_forearm":  {"x":0,"y":0,"z":10}, "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } },
+    { "frame": 30, "bones": { "right_arm": {"x":0,"y":0,"z":-10}, "right_forearm": {"x":0,"y":0,"z":0},  "left_arm": {"x":0,"y":0,"z":10}, "left_forearm": {"x":0,"y":0,"z":0} } }
+  ]
+}
