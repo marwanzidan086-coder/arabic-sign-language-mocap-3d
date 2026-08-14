@@ -97,13 +97,6 @@ export const el = {
     fileInput: document.getElementById('file-input'),
     btnLoadLocal: document.getElementById('btn-load-local'),
     btnResetAll: document.getElementById('btn-reset-all'),
-    btnExportPose: document.getElementById('btn-export-pose'),
-    exportPoseModal: document.getElementById('export-pose-modal'),
-    exportPoseTextarea: document.getElementById('export-pose-textarea'),
-    btnCloseExportModal: document.getElementById('btn-close-export-modal'),
-    btnCopyPoseJson: document.getElementById('btn-copy-pose-json'),
-    btnSavePoseLocal: document.getElementById('btn-save-pose-local'),
-    exportPoseFeedback: document.getElementById('export-pose-feedback'),
     boneSearch: document.getElementById('bone-search'),
     boneTree: document.getElementById('bone-tree'),
     noSelectionMsg: document.getElementById('no-selection-msg'),
@@ -191,6 +184,8 @@ export const el = {
     btnCalibrateMocap: document.getElementById('btn-calibrate-mocap'),
     webcamStatusDot: document.getElementById('webcam-status-dot'),
     btnExportPose: document.getElementById('btn-export-pose'),
+    btnExportPoseTop: document.getElementById('btn-export-pose-top'),
+    btnExportPoseInspector: document.getElementById('btn-export-pose-inspector'),
     btnExportTimer: document.getElementById('btn-export-timer'),
     
     // New MoCap elements

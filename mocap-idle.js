@@ -119,68 +119,6 @@ export const CUSTOM_IDLE_POSE = {
     "RightHandThumb3": [-0.0281, -0.0665, 0.0511, 0.9961]
 };
 
-// Load any user-saved custom idle pose from localStorage if available
-try {
-    const saved = localStorage.getItem('user_custom_idle_pose');
-    if (saved) {
-        const parsed = JSON.parse(saved);
-        Object.assign(CUSTOM_IDLE_POSE, parsed);
-        console.log("Loaded user custom idle pose from localStorage:", parsed);
-    }
-} catch (e) {
-    console.warn("Could not load custom idle pose from localStorage:", e);
-}
-
-export function captureCurrentPose() {
-    const poseQuaternions = {};
-    const poseDegrees = {};
-
-    // Standard mapped bones
-    Object.keys(state.mappedAvatarBones).forEach(boneName => {
-        const bone = state.mappedAvatarBones[boneName];
-        if (bone && bone.isBone) {
-            const q = bone.quaternion;
-            poseQuaternions[boneName] = [
-                parseFloat(q.x.toFixed(4)),
-                parseFloat(q.y.toFixed(4)),
-                parseFloat(q.z.toFixed(4)),
-                parseFloat(q.w.toFixed(4))
-            ];
-            const euler = new THREE.Euler().setFromQuaternion(q, 'XYZ');
-            poseDegrees[boneName] = {
-                x: parseFloat(THREE.MathUtils.radToDeg(euler.x).toFixed(1)),
-                y: parseFloat(THREE.MathUtils.radToDeg(euler.y).toFixed(1)),
-                z: parseFloat(THREE.MathUtils.radToDeg(euler.z).toFixed(1))
-            };
-        }
-    });
-
-    // Also include any bones in state.bones with significant rotation
-    state.bones.forEach(bone => {
-        if (!poseQuaternions[bone.name]) {
-            const q = bone.quaternion;
-            const euler = new THREE.Euler().setFromQuaternion(q, 'XYZ');
-            poseQuaternions[bone.name] = [
-                parseFloat(q.x.toFixed(4)),
-                parseFloat(q.y.toFixed(4)),
-                parseFloat(q.z.toFixed(4)),
-                parseFloat(q.w.toFixed(4))
-            ];
-            poseDegrees[bone.name] = {
-                x: parseFloat(THREE.MathUtils.radToDeg(euler.x).toFixed(1)),
-                y: parseFloat(THREE.MathUtils.radToDeg(euler.y).toFixed(1)),
-                z: parseFloat(THREE.MathUtils.radToDeg(euler.z).toFixed(1))
-            };
-        }
-    });
-
-    return {
-        timestamp: new Date().toISOString(),
-        customIdlePose: poseQuaternions,
-        readableDegrees: poseDegrees
-    };
-}
-
 export function applyIdlePose() {
     if (!state.model || Object.keys(state.mappedAvatarBones).length === 0) return;
 
@@ -194,20 +132,11 @@ export function applyIdlePose() {
         }
     });
 
+    // Force update world matrices of the model so alignBoneInstant reads fresh parent orientations
     state.model.updateMatrixWorld(true);
 
-    // Apply the custom idle pose quaternions (either default or user customized)
-    if (Object.keys(CUSTOM_IDLE_POSE).length > 0) {
-        Object.keys(CUSTOM_IDLE_POSE).forEach(boneName => {
-            const bone = state.mappedAvatarBones[boneName] || state.bones.find(b => b.name === boneName);
-            if (bone) {
-                const q = CUSTOM_IDLE_POSE[boneName];
-                if (Array.isArray(q) && q.length === 4) {
-                    bone.quaternion.set(q[0], q[1], q[2], q[3]);
-                }
-            }
-        });
-    } else if (state.vrm) {
+    if (state.vrm) {
+        // VRM Idle Pose: Lower arms naturally using directions
         const baseLeftArm = new THREE.Vector3(-1, 0, 0);
         const baseRightArm = new THREE.Vector3(1, 0, 0);
         
@@ -217,7 +146,17 @@ export function applyIdlePose() {
         alignBoneInstant(state.mappedAvatarBones.RightArm, IDLE_ARM_DIRECTIONS.RightArm, baseRightArm);
         alignBoneInstant(state.mappedAvatarBones.RightForeArm, IDLE_ARM_DIRECTIONS.RightForeArm, baseRightArm);
         
+        // Curl fingers slightly for natural hands
         curlAllFingers(5);
+    } else {
+        // Apply the custom idle pose quaternions captured by the user
+        Object.keys(CUSTOM_IDLE_POSE).forEach(boneName => {
+            const bone = state.mappedAvatarBones[boneName];
+            if (bone) {
+                const q = CUSTOM_IDLE_POSE[boneName];
+                bone.quaternion.set(q[0], q[1], q[2], q[3]);
+            }
+        });
     }
 
     state.bones.forEach(b => b.updateMatrixWorld(true));

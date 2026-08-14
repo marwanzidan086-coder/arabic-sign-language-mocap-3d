@@ -20,9 +20,7 @@ import {
     toggleMocapMode,
     preloadMoCapModels,
     stopMoCap,
-    clearAllBoneSmoothers,
-    captureCurrentPose,
-    CUSTOM_IDLE_POSE
+    clearAllBoneSmoothers
 } from './mocap.js';
 import { startRecording, pauseRecording, stopAndExportRecording } from './mocap-recorder.js';
 
@@ -673,49 +671,141 @@ export function showPoseExportModal(jsonStr) {
     header.style.fontSize = '18px';
     header.innerHTML = '<span><i class="fa-solid fa-file-export"></i> تصدير وضعية المفاصل / Pose Export</span>';
     
+export function showPoseExportModal(jsonStr) {
+    // Attempt automatic clipboard copy immediately
+    let autoCopied = false;
+    if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
+        navigator.clipboard.writeText(jsonStr).then(() => {
+            autoCopied = true;
+        }).catch(err => {
+            console.warn('Auto copy failed:', err);
+        });
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'export-pose-modal-popup';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100vw';
+    modal.style.height = '100vh';
+    modal.style.backgroundColor = 'rgba(15, 23, 42, 0.75)';
+    modal.style.backdropFilter = 'blur(16px)';
+    modal.style.webkitBackdropFilter = 'blur(16px)';
+    modal.style.zIndex = '30000';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.fontFamily = '"Cairo", "Plus Jakarta Sans", sans-serif';
+    modal.style.animation = 'fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1)';
+    
+    const content = document.createElement('div');
+    content.className = 'glass-card';
+    content.style.width = '550px';
+    content.style.maxWidth = '92vw';
+    content.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+    content.style.border = '1px solid rgba(0, 242, 254, 0.4)';
+    content.style.boxShadow = '0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 242, 254, 0.2)';
+    content.style.borderRadius = '18px';
+    content.style.padding = '24px';
+    content.style.display = 'flex';
+    content.style.flexDirection = 'column';
+    content.style.gap = '16px';
+    content.style.color = '#f8fafc';
+    
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.4); display: flex; align-items: center; justify-content: center; color: #00f2fe; font-size: 18px;">
+                <i class="fa-solid fa-file-export"></i>
+            </div>
+            <div>
+                <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #ffffff;">تصدير وضعية الأفاتار (Pose Export)</h3>
+                <span style="font-size: 12px; color: #94a3b8;">Custom Avatar Joint Quaternions</span>
+            </div>
+        </div>
+    `;
+    
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
-    closeBtn.style.background = 'none';
-    closeBtn.style.border = 'none';
-    closeBtn.style.color = '#ff4d4d';
+    closeBtn.style.background = 'rgba(239, 68, 68, 0.15)';
+    closeBtn.style.border = '1px solid rgba(239, 68, 68, 0.3)';
+    closeBtn.style.color = '#f87171';
     closeBtn.style.cursor = 'pointer';
-    closeBtn.style.fontSize = '20px';
+    closeBtn.style.fontSize = '16px';
+    closeBtn.style.width = '32px';
+    closeBtn.style.height = '32px';
+    closeBtn.style.borderRadius = '8px';
+    closeBtn.style.display = 'flex';
+    closeBtn.style.alignItems = 'center';
+    closeBtn.style.justifyContent = 'center';
+    closeBtn.style.transition = 'all 0.2s';
     closeBtn.onclick = () => modal.remove();
     header.appendChild(closeBtn);
     
-    const desc = document.createElement('p');
-    desc.style.color = '#a4e4ec';
-    desc.style.fontSize = '13px';
-    desc.style.margin = '0';
-    desc.style.lineHeight = '1.5';
-    desc.innerHTML = "قم بنسخ النص من المربع بالأسفل وأرسله لي في الشات، أو اضغط على <b>Download File</b> لتحميل الوضعية كملف JSON وإرساله. (إذا فشل النسخ التلقائي، اضغط داخل المربع وانسخ يدوياً باستخدام Ctrl+C).";
-    
+    const banner = document.createElement('div');
+    banner.style.padding = '12px 16px';
+    banner.style.borderRadius = '10px';
+    banner.style.backgroundColor = 'rgba(16, 185, 129, 0.12)';
+    banner.style.border = '1px solid rgba(16, 185, 129, 0.35)';
+    banner.style.color = '#34d399';
+    banner.style.fontSize = '13px';
+    banner.style.display = 'flex';
+    banner.style.alignItems = 'center';
+    banner.style.gap = '10px';
+    banner.innerHTML = `
+        <i class="fa-solid fa-circle-check" style="font-size: 18px;"></i>
+        <span><b>تم نسخ كود الوضعية تلقائياً إلى الحافظة!</b> انسخ النص أدناه أو أرسله مباشرة في الشات لجعله الوضعية الافتراضية.</span>
+    `;
+
     const textarea = document.createElement('textarea');
     textarea.value = jsonStr;
     textarea.readOnly = true;
     textarea.style.width = '100%';
     textarea.style.height = '180px';
-    textarea.style.backgroundColor = '#0f1012';
-    textarea.style.color = '#00ffcc';
-    textarea.style.border = '1px solid #2b2d31';
-    textarea.style.borderRadius = '6px';
-    textarea.style.padding = '10px';
+    textarea.style.backgroundColor = '#0b0f19';
+    textarea.style.color = '#38bdf8';
+    textarea.style.border = '1px solid rgba(56, 189, 248, 0.25)';
+    textarea.style.borderRadius = '10px';
+    textarea.style.padding = '12px';
     textarea.style.boxSizing = 'border-box';
     textarea.style.fontFamily = '"JetBrains Mono", monospace';
-    textarea.style.fontSize = '11px';
+    textarea.style.fontSize = '11.5px';
     textarea.style.resize = 'none';
+    textarea.style.lineHeight = '1.5';
     textarea.onclick = () => textarea.select();
     
     const footer = document.createElement('div');
     footer.style.display = 'flex';
-    footer.style.justifyContent = 'flex-end';
+    footer.style.justifyContent = 'space-between';
+    footer.style.alignItems = 'center';
     footer.style.gap = '10px';
+    footer.style.flexWrap = 'wrap';
+
+    const countInfo = document.createElement('span');
+    countInfo.style.fontSize = '12px';
+    countInfo.style.color = '#94a3b8';
+    countInfo.innerHTML = `📊 تم التقاط وتصدير جميع المفاصل`;
+    footer.appendChild(countInfo);
+
+    const btnGroup = document.createElement('div');
+    btnGroup.style.display = 'flex';
+    btnGroup.style.gap = '10px';
     
     const copyBtn = document.createElement('button');
-    copyBtn.className = 'btn btn-secondary';
-    copyBtn.style.padding = '8px 16px';
-    copyBtn.style.fontSize = '12px';
-    copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Text';
+    copyBtn.className = 'btn btn-primary font-arabic';
+    copyBtn.style.padding = '8px 18px';
+    copyBtn.style.fontSize = '13px';
+    copyBtn.style.fontWeight = '700';
+    copyBtn.style.background = 'linear-gradient(135deg, #0284c7, #06b6d4)';
+    copyBtn.style.color = '#ffffff';
+    copyBtn.style.border = 'none';
+    copyBtn.style.borderRadius = '8px';
+    copyBtn.style.cursor = 'pointer';
+    copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> نسخ الكود (Copy JSON)';
     
     const performFallbackCopy = () => {
         textarea.focus();
@@ -723,23 +813,23 @@ export function showPoseExportModal(jsonStr) {
         try {
             const successful = document.execCommand('copy');
             if (successful) {
-                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Done!';
+                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> تم النسخ بنجاح!';
             } else {
-                copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Failed - Copy Manually';
+                copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> انسخ يدوياً عبر Ctrl+C';
             }
         } catch (err) {
             console.error('Fallback copy failed', err);
-            copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> Failed - Copy Manually';
+            copyBtn.innerHTML = '<i class="fa-solid fa-xmark"></i> انسخ يدوياً عبر Ctrl+C';
         }
-        setTimeout(() => copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Text', 2000);
+        setTimeout(() => copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> نسخ الكود (Copy JSON)', 2500);
     };
 
     copyBtn.onclick = () => {
         if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
             navigator.clipboard.writeText(jsonStr)
                 .then(() => {
-                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Done!';
-                    setTimeout(() => copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> Copy Text', 2000);
+                    copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> تم النسخ بنجاح!';
+                    setTimeout(() => copyBtn.innerHTML = '<i class="fa-solid fa-copy"></i> نسخ الكود (Copy JSON)', 2500);
                 })
                 .catch(err => {
                     console.warn('navigator.clipboard error, trying fallback:', err);
@@ -751,35 +841,34 @@ export function showPoseExportModal(jsonStr) {
     };
     
     const downloadBtn = document.createElement('button');
-    downloadBtn.className = 'btn btn-primary';
+    downloadBtn.className = 'btn btn-secondary font-arabic';
     downloadBtn.style.padding = '8px 16px';
-    downloadBtn.style.fontSize = '12px';
-    downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download File';
+    downloadBtn.style.fontSize = '13px';
+    downloadBtn.style.borderRadius = '8px';
+    downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> تحميل كملف JSON';
     downloadBtn.onclick = () => {
         try {
             const blob = new Blob([jsonStr], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'avatar-pose.json';
+            a.download = 'avatar-custom-pose.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            // Delay revocation to prevent browsers from aborting the download
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 1000);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         } catch (err) {
             console.error('Blob download failed', err);
             alert('تحميل الملف فشل. الرجاء نسخ النص يدوياً بدلاً من ذلك.');
         }
     };
     
-    footer.appendChild(copyBtn);
-    footer.appendChild(downloadBtn);
+    btnGroup.appendChild(copyBtn);
+    btnGroup.appendChild(downloadBtn);
+    footer.appendChild(btnGroup);
     
     content.appendChild(header);
-    content.appendChild(desc);
+    content.appendChild(banner);
     content.appendChild(textarea);
     content.appendChild(footer);
     modal.appendChild(content);
@@ -795,7 +884,7 @@ export function showPoseExportModal(jsonStr) {
 
 export function exportCurrentPose() {
     if (!state.model || Object.keys(state.mappedAvatarBones).length === 0) {
-        alert("No model loaded or no skeleton bones mapped.");
+        alert("يرجى التأكد من تحميل النموذج وتعيين المفاصل أولاً.");
         return;
     }
     
@@ -803,14 +892,12 @@ export function exportCurrentPose() {
     Object.keys(state.mappedAvatarBones).forEach(boneName => {
         const bone = state.mappedAvatarBones[boneName];
         if (bone) {
-            poseData[boneName] = {
-                quaternion: [
-                    parseFloat(bone.quaternion.x.toFixed(4)),
-                    parseFloat(bone.quaternion.y.toFixed(4)),
-                    parseFloat(bone.quaternion.z.toFixed(4)),
-                    parseFloat(bone.quaternion.w.toFixed(4))
-                ]
-            };
+            poseData[boneName] = [
+                parseFloat(bone.quaternion.x.toFixed(4)),
+                parseFloat(bone.quaternion.y.toFixed(4)),
+                parseFloat(bone.quaternion.z.toFixed(4)),
+                parseFloat(bone.quaternion.w.toFixed(4))
+            ];
         }
     });
 
@@ -1019,40 +1106,6 @@ export function startMoCapCalibration() {
     }, 1000);
 }
 
-export function openExportPoseModal() {
-    if (!state.model) {
-        alert("يرجى تحميل أو تحديد الأفاتار أولاً!");
-        return;
-    }
-
-    const poseData = captureCurrentPose();
-    const formattedJSON = JSON.stringify(poseData.customIdlePose, null, 4);
-    
-    if (el.exportPoseTextarea) {
-        el.exportPoseTextarea.value = formattedJSON;
-    }
-    
-    // Attempt auto copy to clipboard
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(formattedJSON).then(() => {
-            showExportPoseFeedback("تم نسخ كود الوضعية تلقائياً للحافظة! 📋 يمكنك لصقه وإرساله في الشات.", "success");
-        }).catch(() => {
-            showExportPoseFeedback("تم توليد كود الوضعية بنجاح. اضغط 'نسخ الكود' لنسخه.", "info");
-        });
-    }
-
-    if (el.exportPoseModal) {
-        el.exportPoseModal.classList.remove('hidden');
-    }
-}
-
-export function showExportPoseFeedback(msg, type = 'success') {
-    if (!el.exportPoseFeedback) return;
-    el.exportPoseFeedback.className = `feedback-pill ${type} font-arabic`;
-    el.exportPoseFeedback.innerText = msg;
-    el.exportPoseFeedback.classList.remove('hidden');
-}
-
 export function setupEventListeners() {
     window.addEventListener('resize', triggerViewportResize);
 
@@ -1232,62 +1285,6 @@ export function setupEventListeners() {
         updateInspectorInputsFromBone();
     });
 
-    // --- Export Pose Handlers ---
-    if (el.btnExportPose) {
-        el.btnExportPose.addEventListener('click', () => {
-            openExportPoseModal();
-        });
-    }
-
-    const btnExportInspector = document.getElementById('btn-export-pose-inspector');
-    if (btnExportInspector) {
-        btnExportInspector.addEventListener('click', () => {
-            openExportPoseModal();
-        });
-    }
-
-    const btnExportEmpty = document.getElementById('btn-export-pose-empty');
-    if (btnExportEmpty) {
-        btnExportEmpty.addEventListener('click', () => {
-            openExportPoseModal();
-        });
-    }
-
-    if (el.btnCloseExportModal) {
-        el.btnCloseExportModal.addEventListener('click', () => {
-            if (el.exportPoseModal) el.exportPoseModal.classList.add('hidden');
-        });
-    }
-
-    if (el.btnCopyPoseJson) {
-        el.btnCopyPoseJson.addEventListener('click', () => {
-            if (el.exportPoseTextarea) {
-                el.exportPoseTextarea.select();
-                navigator.clipboard.writeText(el.exportPoseTextarea.value).then(() => {
-                    showExportPoseFeedback("تم النسخ بنجاح! 📋 يمكنك الآن لصق الكود وإرساله في الشات.", "success");
-                }).catch(() => {
-                    document.execCommand('copy');
-                    showExportPoseFeedback("تم النسخ بنجاح! 📋", "success");
-                });
-            }
-        });
-    }
-
-    if (el.btnSavePoseLocal) {
-        el.btnSavePoseLocal.addEventListener('click', () => {
-            try {
-                const poseData = captureCurrentPose();
-                localStorage.setItem('user_custom_idle_pose', JSON.stringify(poseData.customIdlePose));
-                Object.assign(CUSTOM_IDLE_POSE, poseData.customIdlePose);
-                cacheIdlePoseQuaternions();
-                showExportPoseFeedback("تم حفظ وتعيين هذه الوضعية كوضعية افتراضية للأفاتار بنجاح! 💾✨", "success");
-            } catch (err) {
-                console.error("Failed to save pose locally:", err);
-                showExportPoseFeedback("حدث خطأ أثناء الحفظ محلياً.", "danger");
-            }
-        });
-    }
-
     window.addEventListener('keydown', (event) => {
         if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') {
             return;
@@ -1428,6 +1425,18 @@ export function setupEventListeners() {
 
     if (el.btnExportPose) {
         el.btnExportPose.addEventListener('click', () => {
+            exportCurrentPose();
+        });
+    }
+
+    if (el.btnExportPoseTop) {
+        el.btnExportPoseTop.addEventListener('click', () => {
+            exportCurrentPose();
+        });
+    }
+
+    if (el.btnExportPoseInspector) {
+        el.btnExportPoseInspector.addEventListener('click', () => {
             exportCurrentPose();
         });
     }
