@@ -1,0 +1,23 @@
+{
+  "name": "arabic-sign-language-mocap-3d",
+  "version": "1.0.0",
+  "description": "نظام التعرف وتدريب لغة الإشارة العربية وتتبع الحركة ثلاثي الأبعاد مع أفاتار VRM وربط سحابي بـ Firebase",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "npx serve ."
+  },
+  "keywords": [
+    "arabic-sign-language",
+    "mocap",
+    "mediapipe",
+    "threejs",
+    "vrm",
+    "firebase",
+    "firestore",
+    "gesture-recognition"
+  ],
+  "author": "Marwan Zidan",
+  "license": "MIT"
+}

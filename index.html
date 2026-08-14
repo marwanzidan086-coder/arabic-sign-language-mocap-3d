@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rigged 3D GLB Joint Viewer & Manipulator</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="trainer.css">
+    
+    <!-- Unicode-to-SJIS Encoder for VMD exporter -->
+    <script src="encoding.min.js"></script>
+    
+    <!-- Three.js Import Map -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+                "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+            }
+        }
+    </script>
+</head>
+<body class="clean-mode">
+    <!-- Background Vectors Decal (Towers & Motifs) -->
+    <div class="bg-vector bg-vector-left">
+        <svg viewBox="0 0 300 600" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Tornado Tower Doha -->
+            <path d="M50 600 C70 450, 70 300, 100 180 L120 180 C150 300, 150 450, 170 600 Z" stroke="rgba(16, 134, 146, 0.25)" stroke-width="1.5"/>
+            <!-- Tornado grid diagonals -->
+            <path d="M50 600 L120 180 M170 600 L100 180" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <path d="M55 550 L115 250 M165 550 L105 250" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <path d="M62 500 L112 320 M158 500 L108 320" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <path d="M72 400 L110 370 M148 400 L110 370" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="50" y1="580" x2="170" y2="580" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+            <line x1="60" y1="520" x2="160" y2="520" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+            <line x1="75" y1="440" x2="145" y2="440" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+            <line x1="88" y1="360" x2="132" y2="360" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+            <line x1="97" y1="260" x2="123" y2="260" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+
+            <!-- Highrise Tower 2 -->
+            <rect x="190" y="280" width="45" height="320" rx="3" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1.5"/>
+            <!-- Grid detail on Highrise -->
+            <line x1="190" y1="320" x2="235" y2="320" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="360" x2="235" y2="360" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="400" x2="235" y2="400" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="440" x2="235" y2="440" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="480" x2="235" y2="480" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="520" x2="235" y2="520" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <line x1="190" y1="560" x2="235" y2="560" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1"/>
+            <!-- Decorative dots -->
+            <circle cx="212" cy="300" r="3" fill="rgba(16, 134, 146, 0.25)"/>
+
+            <!-- Highrise Tower 3 (Pointy) -->
+            <path d="M260 600 L260 380 L275 350 L290 380 L290 600 Z" stroke="rgba(16, 134, 146, 0.18)" stroke-width="1.5"/>
+            <line x1="260" y1="420" x2="290" y2="420" stroke="rgba(16, 134, 146, 0.12)" stroke-width="1"/>
+            <line x1="260" y1="470" x2="290" y2="470" stroke="rgba(16, 134, 146, 0.12)" stroke-width="1"/>
+            <line x1="260" y1="520" x2="290" y2="520" stroke="rgba(16, 134, 146, 0.12)" stroke-width="1"/>
+            <line x1="260" y1="570" x2="290" y2="570" stroke="rgba(16, 134, 146, 0.12)" stroke-width="1"/>
+        </svg>
+    </div>
+
+    <div class="bg-vector bg-vector-right">
+        <svg viewBox="0 0 300 600" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Tech widget lines -->
+            <circle cx="150" cy="350" r="50" stroke="rgba(16, 134, 146, 0.25)" stroke-dasharray="5 5" stroke-width="1.5"/>
+            <circle cx="150" cy="350" r="40" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1"/>
+            <circle cx="150" cy="350" r="15" stroke="rgba(16, 134, 146, 0.3)" stroke-width="2"/>
+            
+            <line x1="150" y1="180" x2="150" y2="280" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1.5"/>
+            <line x1="150" y1="420" x2="150" y2="520" stroke="rgba(16, 134, 146, 0.2)" stroke-width="1.5"/>
+            
+            <!-- Horizontal lines extending -->
+            <path d="M150 220 L70 220 L50 240" stroke="rgba(16, 134, 146, 0.18)" stroke-width="1.5"/>
+            <path d="M150 480 L230 480 L250 460" stroke="rgba(16, 134, 146, 0.18)" stroke-width="1.5"/>
+            
+            <!-- Interactive circles represented in vector -->
+            <circle cx="50" cy="240" r="5" fill="rgba(16, 134, 146, 0.3)"/>
+            <circle cx="250" cy="460" r="5" fill="rgba(16, 134, 146, 0.3)"/>
+            
+            <!-- Vertical ruler lines -->
+            <line x1="270" y1="100" x2="270" y2="500" stroke="rgba(16, 134, 146, 0.15)" stroke-width="1" stroke-dasharray="2 8"/>
+        </svg>
+    </div>
+
+    <!-- Main App Wrapper -->
+    <div id="app">
+        
+        <!-- Header (Control bar in developer mode) -->
+        <header class="app-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-bone logo-icon"></i>
+                <div class="logo-text">
+                    <h1>BONE RIGGER</h1>
+                    <span>Joint Inspector & Pose Editor</span>
+                </div>
+            </div>
+            <div class="header-info" id="model-info">
+                <span class="info-tag"><i class="fa-solid fa-file-code"></i> <span id="info-name">Loading model...</span></span>
+                <span class="info-tag"><i class="fa-solid fa-diagram-project"></i> <span id="info-joints">0 Joints</span></span>
+                <span class="info-tag"><i class="fa-solid fa-vector-square"></i> <span id="info-vertices">0 Vertices</span></span>
+            </div>
+            <div class="header-actions">
+                <button id="btn-load-local" class="btn btn-secondary">
+                    <i class="fa-solid fa-file-import"></i> Load Model
+                    <input type="file" id="file-input" accept=".glb,.gltf,.vrm" style="display: none;">
+                </button>
+                <button id="btn-reset-all" class="btn btn-danger">
+                    <i class="fa-solid fa-rotate-left"></i> Reset Pose
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <main class="app-body">
+            
+            <!-- Left Sidebar: Outliner / Bone Tree -->
+            <aside class="sidebar left-sidebar">
+                <div class="sidebar-header">
+                    <h2><i class="fa-solid fa-list-ul"></i> Joint Outliner</h2>
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="bone-search" placeholder="Search joints...">
+                    </div>
+                </div>
+                <div class="sidebar-content outliner-container">
+                    <div id="bone-tree" class="tree-view">
+                        <!-- Bone hierarchy tree will be generated here -->
+                        <div class="tree-loading">Loading bones...</div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center: 3D Viewport -->
+            <section class="viewport-container" id="canvas-container">
+                <!-- Clean UI Overlays (Presented to user by default) -->
+                
+                <!-- Top-Left: Webcam MoCap Panel -->
+                <div id="webcam-panel" class="webcam-panel">
+                    <div class="webcam-header" id="webcam-header">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="drag-grip" title="اسحب لنقل الشاشة"><i class="fa-solid fa-grip-vertical"></i></div>
+                            <h3><i class="fa-solid fa-camera"></i> Live MoCap Feed</h3>
+                        </div>
+                        <div class="webcam-status-indicator" id="webcam-status-dot"></div>
+                    </div>
+                    
+                    <!-- Source Switcher for Webcam vs Local Video File -->
+                    <div class="webcam-source-selector">
+                        <button id="btn-src-camera" class="src-btn active" title="Webcam Feed">
+                            <i class="fa-solid fa-video"></i> Camera
+                        </button>
+                        <button id="btn-src-video" class="src-btn" title="Local Video File">
+                            <i class="fa-solid fa-file-video"></i> Video File
+                        </button>
+                        <input type="file" id="video-file-input" accept="video/*" style="display: none;">
+                    </div>
+
+                    <div class="webcam-view-wrapper">
+                        <!-- Video element (for stream or local video) -->
+                        <video id="webcam-video" autoplay playsinline muted></video>
+                        <!-- Canvas element (stacked directly on top to draw joints overlay) -->
+                        <canvas id="webcam-overlay"></canvas>
+                        <!-- Loading spinner inside camera view -->
+                        <div class="webcam-loader" id="webcam-loader">
+                            <i class="fa-solid fa-circle-notch fa-spin"></i>
+                            <span id="webcam-loader-text">MoCap Inactive</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Sleek Recording HUD -->
+                    <div id="mocap-recording-panel" class="webcam-recording-panel">
+                        <div class="rec-status-row">
+                            <span class="rec-dot"></span>
+                            <span id="rec-timer">00:00.0</span>
+                        </div>
+                        <div class="rec-buttons">
+                            <button id="btn-record-start" class="btn btn-secondary btn-sm btn-rec" title="Start Recording"><i class="fa-solid fa-circle"></i></button>
+                            <button id="btn-record-pause" class="btn btn-secondary btn-sm btn-rec hidden" title="Pause Recording"><i class="fa-solid fa-pause"></i></button>
+                            <button id="btn-record-stop" class="btn btn-danger btn-sm btn-rec hidden" title="Stop & Export VMD"><i class="fa-solid fa-stop"></i> VMD</button>
+                        </div>
+                    </div>
+
+                    <div class="webcam-footer" style="gap: 8px;">
+                        <button id="btn-toggle-mocap" class="btn btn-secondary btn-sm" title="Toggle Motion Capture Mode" style="flex: 1;">
+                            <i class="fa-solid fa-play"></i> Start MoCap
+                        </button>
+                        <button id="btn-calibrate-mocap" class="btn btn-primary btn-sm" title="Calibrate Motion Capture" style="display: none; background: linear-gradient(135deg, #108692, #00ffcc); color: #0f1012; font-weight: 600; border: none; flex: 1; justify-content: center;">
+                            <i class="fa-solid fa-arrows-to-eye"></i> Calibrate
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Left Side: Arrow collapse button (aesthetic) -->
+                <div class="floating-left-arrow">
+                    <button class="arrow-circle-btn">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <!-- Viewport Shortcuts/Gizmo Info (shown only in developer mode) -->
+                <div class="viewport-overlay pointer-events-none dev-only">
+                    <div class="hotkey-legend">
+                        <div class="hotkey-item" id="hk-select"><kbd>Q</kbd> <span>Select</span></div>
+                        <div class="hotkey-item" id="hk-translate"><kbd>W</kbd> <span>Translate</span></div>
+                        <div class="hotkey-item" id="hk-rotate"><kbd>E</kbd> <span>Rotate</span></div>
+                        <div class="hotkey-item" id="hk-scale"><kbd>R</kbd> <span>Scale</span></div>
+                        <div class="hotkey-item"><kbd>Esc</kbd> <span>Deselect</span></div>
+                    </div>
+                    <div class="viewport-gizmo-info">
+                        <span id="gizmo-space-text">Space: LOCAL</span>
+                    </div>
+                </div>
+                
+                <!-- Drag & Drop overlay -->
+                <div id="drop-overlay" class="drop-overlay">
+                    <div class="drop-content">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <h3>Drop rigged GLB/GLTF/VRM here</h3>
+                        <p>Release to load model and visualize joints</p>
+                    </div>
+                </div>
+                <!-- Three.js Canvas will be inserted here -->
+            </section>
+
+
+
+            <!-- Right Sidebar: Inspector & Settings -->
+            <aside class="sidebar right-sidebar">
+                <!-- Tab Headers -->
+                <div class="tab-headers">
+                    <button class="tab-btn active" data-tab="inspector"><i class="fa-solid fa-circle-info"></i> Inspector</button>
+                    <button class="tab-btn" data-tab="settings"><i class="fa-solid fa-sliders"></i> Settings</button>
+                </div>
+
+                <div class="sidebar-content tab-content-container">
+                    <!-- Tab 1: Joint Inspector -->
+                    <div class="tab-pane active" id="tab-inspector">
+                        <!-- Selection Warning -->
+                        <div id="no-selection-msg" class="empty-state">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            <h3>No Joint Selected</h3>
+                            <p>Click on a joint in the 3D view or select one from the Outliner to manipulate it.</p>
+                        </div>
+
+                        <!-- Active Inspector Panel -->
+                        <div id="inspector-panel" class="inspector-panel hidden">
+                            <div class="inspector-section selected-bone-meta">
+                                <h3 id="selected-bone-name">Spine</h3>
+                                <div class="meta-row">
+                                    <span class="meta-label">Index:</span>
+                                    <span class="meta-value" id="selected-bone-index">12</span>
+                                </div>
+                                <div class="meta-row">
+                                    <span class="meta-label">Parent:</span>
+                                    <span class="meta-value" id="selected-bone-parent">Hips</span>
+                                </div>
+                                <div class="btn-group">
+                                    <button id="btn-reset-bone" class="btn btn-secondary btn-sm">
+                                        <i class="fa-solid fa-arrow-rotate-left"></i> Reset Bone
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Transform Panel -->
+                            <div class="inspector-section">
+                                <h4>Transform Space</h4>
+                                <div class="toggle-group space-toggle">
+                                    <button id="space-local" class="btn btn-toggle active">Local</button>
+                                    <button id="space-world" class="btn btn-toggle">World</button>
+                                </div>
+                            </div>
+
+                            <!-- Rotation (Euler) -->
+                            <div class="inspector-section">
+                                <div class="section-title-with-actions">
+                                    <h4>Rotation (Degrees)</h4>
+                                    <button class="btn-reset-axis" id="reset-rot"><i class="fa-solid fa-rotate-left"></i></button>
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-x">X</span>
+                                    <input type="range" id="rot-x" min="-180" max="180" step="0.1" value="0">
+                                    <input type="number" id="rot-x-num" value="0" step="1">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-y">Y</span>
+                                    <input type="range" id="rot-y" min="-180" max="180" step="0.1" value="0">
+                                    <input type="number" id="rot-y-num" value="0" step="1">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-z">Z</span>
+                                    <input type="range" id="rot-z" min="-180" max="180" step="0.1" value="0">
+                                    <input type="number" id="rot-z-num" value="0" step="1">
+                                </div>
+                            </div>
+
+                            <!-- Position -->
+                            <div class="inspector-section">
+                                <div class="section-title-with-actions">
+                                    <h4>Position Offset</h4>
+                                    <button class="btn-reset-axis" id="reset-pos"><i class="fa-solid fa-rotate-left"></i></button>
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-x">X</span>
+                                    <input type="range" id="pos-x" min="-2" max="2" step="0.001" value="0">
+                                    <input type="number" id="pos-x-num" value="0" step="0.01">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-y">Y</span>
+                                    <input type="range" id="pos-y" min="-2" max="2" step="0.001" value="0">
+                                    <input type="number" id="pos-y-num" value="0" step="0.01">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-z">Z</span>
+                                    <input type="range" id="pos-z" min="-2" max="2" step="0.001" value="0">
+                                    <input type="number" id="pos-z-num" value="0" step="0.01">
+                                </div>
+                            </div>
+
+                            <!-- Scale -->
+                            <div class="inspector-section">
+                                <div class="section-title-with-actions">
+                                    <h4>Scale</h4>
+                                    <button class="btn-reset-axis" id="reset-scl"><i class="fa-solid fa-rotate-left"></i></button>
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-x">X</span>
+                                    <input type="range" id="scl-x" min="0.1" max="5" step="0.01" value="1">
+                                    <input type="number" id="scl-x-num" value="1" step="0.1">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-y">Y</span>
+                                    <input type="range" id="scl-y" min="0.1" max="5" step="0.01" value="1">
+                                    <input type="number" id="scl-y-num" value="1" step="0.1">
+                                </div>
+                                <div class="control-row">
+                                    <span class="axis-label axis-z">Z</span>
+                                    <input type="range" id="scl-z" min="0.1" max="5" step="0.01" value="1">
+                                    <input type="number" id="scl-z-num" value="1" step="0.1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Settings -->
+                    <div class="tab-pane" id="tab-settings">
+                        <!-- Viewport Options -->
+                        <div class="settings-section">
+                            <h3><i class="fa-solid fa-eye"></i> Mesh Display</h3>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-show-mesh" checked>
+                                    <span class="checkmark"></span>
+                                    Show Mesh Model
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-wireframe">
+                                    <span class="checkmark"></span>
+                                    Wireframe Mode
+                                </label>
+                            </div>
+                            <div class="control-group slider-control">
+                                <span class="control-label">Mesh Opacity</span>
+                                <div class="slider-val-row">
+                                    <input type="range" id="set-mesh-opacity" min="0" max="1" step="0.05" value="1">
+                                    <span class="value-display" id="val-mesh-opacity">1.0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Skeleton Display Options -->
+                        <div class="settings-section">
+                            <h3><i class="fa-solid fa-bezier-curve"></i> Bone Visuals</h3>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-show-joints" checked>
+                                    <span class="checkmark"></span>
+                                    Show Joints (Spheres)
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-show-skeleton">
+                                    <span class="checkmark"></span>
+                                    Show Skeleton Bones (Lines)
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-idle-pose" checked>
+                                    <span class="checkmark"></span>
+                                    Use Natural Idle Pose
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-xray-joints" checked>
+                                    <span class="checkmark"></span>
+                                    X-Ray Mode (Bones on top)
+                                </label>
+                            </div>
+                            <div class="control-group button-control" style="margin-top: 10px;">
+                                <button id="btn-export-pose" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fa-solid fa-file-export"></i> Export Current Pose
+                                </button>
+                            </div>
+                            <div class="control-group button-control" style="margin-top: 5px;">
+                                <button id="btn-export-timer" class="btn btn-secondary btn-sm" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #108692, #00ffcc); color: #0f1012; font-weight: 600; border: none;">
+                                    <i class="fa-solid fa-stopwatch"></i> Export with 5s Timer
+                                </button>
+                            </div>
+                            <div class="control-group slider-control">
+                                <span class="control-label">Joint Spheres Size</span>
+                                <div class="slider-val-row">
+                                    <input type="range" id="set-joint-size" min="0.005" max="0.1" step="0.001" value="0.015">
+                                    <span class="value-display" id="val-joint-size">0.015</span>
+                                </div>
+                            </div>
+                            <div class="control-group color-control">
+                                <span class="control-label">Joint Color</span>
+                                <input type="color" id="set-joint-color" value="#00ffcc">
+                            </div>
+                            <div class="control-group color-control">
+                                <span class="control-label">Selected Joint Color</span>
+                                <input type="color" id="set-joint-color-sel" value="#ffea00">
+                            </div>
+                        <!-- Face Tracking Options -->
+                        <div class="settings-section">
+                            <h3><i class="fa-solid fa-face-smile"></i> Face Tracking</h3>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-enable-face" checked>
+                                    <span class="checkmark"></span>
+                                    Enable Face Mocap (Blink & Speech)
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-enable-eye-look" checked>
+                                    <span class="checkmark"></span>
+                                    Enable Eye Gaze Tracking
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Scene Environment -->
+                        <div class="settings-section">
+                            <h3><i class="fa-solid fa-mountain-sun"></i> Scene Env</h3>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-show-grid" checked>
+                                    <span class="checkmark"></span>
+                                    Show Floor Grid
+                                </label>
+                            </div>
+                            <div class="control-group">
+                                <label class="checkbox-container">
+                                    <input type="checkbox" id="set-shadows" checked>
+                                    <span class="checkmark"></span>
+                                    Enable Shadows
+                                </label>
+                            </div>
+                            <div class="control-group slider-control">
+                                <span class="control-label">Light Intensity</span>
+                                <div class="slider-val-row">
+                                    <input type="range" id="set-light-intensity" min="0.1" max="3" step="0.1" value="1.2">
+                                    <span class="value-display" id="val-light-intensity">1.2</span>
+                                </div>
+                            </div>
+                            <div class="control-group select-control">
+                                <span class="control-label">Theme Background</span>
+                                <select id="set-bg-theme">
+                                    <option value="blender">Blender Dark (Default)</option>
+                                    <option value="charcoal">Charcoal Space</option>
+                                    <option value="midnight">Midnight Black</option>
+                                    <option value="light">Studio Light</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <!-- Trainer View -->
+        <div id="trainer-view" class="hidden">
+            <div class="trainer-grid">
+                <!-- Column 1: Webcam & Playback placeholder -->
+                <div class="trainer-view-column">
+                    <div id="trainer-webcam-placeholder"></div>
+                </div>
+                <!-- Column 2: Controls -->
+                <div class="trainer-controls-column">
+                    <!-- Card 1: Train Custom Gesture -->
+                    <div class="control-card glass-card">
+                        <h3 class="card-title font-arabic">🧠 تدريب إشارة مخصصة من الفيديو</h3>
+                        <div class="input-group">
+                            <label class="input-label font-arabic">اسم الإشارة:</label>
+                            <input type="text" id="trainer-gesture-name" class="text-input font-arabic" placeholder="مثال: أمي، شرب، صباح الخير...">
+                        </div>
+                        <div class="trainer-status-grid">
+                            <div class="trainer-status-item">
+                                <span class="font-arabic">جودة اليد الآن</span>
+                                <strong id="live-quality-percent" class="font-latin">0%</strong>
+                                <div class="quality-track">
+                                    <div id="live-quality-bar" class="quality-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="trainer-status-item">
+                                <span class="font-arabic">إطارات التسجيل</span>
+                                <strong id="recording-frames-count" class="font-latin">0</strong>
+                                <div class="quality-track">
+                                    <div id="recording-frames-bar" class="quality-bar accent" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="trainer-actions-grid">
+                            <button id="btn-trainer-record" class="btn btn-accent btn-action font-arabic">
+                                📹 تسجيل عينة 3 ثواني
+                            </button>
+                            <button id="btn-trainer-new" class="btn btn-secondary btn-action font-arabic">
+                                ✨ إشارة جديدة
+                            </button>
+                        </div>
+                        <div id="trainer-feedback" class="trainer-feedback hidden">
+                            <p id="trainer-status-message" class="feedback-message font-arabic"></p>
+                            <div id="trainer-last-saved" class="feedback-pill success hidden font-arabic"></div>
+                            <div id="trainer-live-prediction" class="feedback-pill live hidden font-arabic"></div>
+                            <div id="trainer-error" class="feedback-pill danger hidden font-arabic"></div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Metrics Dashboard -->
+                    <div class="control-card glass-card">
+                        <h3 class="card-title font-arabic">📏 قياسات التدريب اللحظية</h3>
+                        <div class="metrics-dashboard">
+                            <div class="metric-row">
+                                <span class="metric-icon">🎥</span>
+                                <span class="metric-name font-arabic">المسافة إلى الكاميرا:</span>
+                                <div class="metric-progress-bar">
+                                    <div id="metric-camera-bar" class="metric-progress-val glow-bar-magenta" style="width: 0%"></div>
+                                </div>
+                                <span id="metric-camera-val" class="metric-value font-latin">-- cm</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-icon">👤</span>
+                                <span class="metric-name font-arabic">المسافة إلى الجسم:</span>
+                                <div class="metric-progress-bar">
+                                    <div id="metric-body-bar" class="metric-progress-val glow-bar-teal" style="width: 0%"></div>
+                                </div>
+                                <span id="metric-body-val" class="metric-value font-latin">غير نشط</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-icon">👐</span>
+                                <span class="metric-name font-arabic">المسافة بين اليدين:</span>
+                                <div class="metric-progress-bar">
+                                    <div id="metric-hands-bar" class="metric-progress-val glow-bar-purple" style="width: 0%"></div>
+                                </div>
+                                <span id="metric-hands-val" class="metric-value font-latin">يد واحدة</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Saved Gestures -->
+                    <div class="control-card glass-card saved-gestures-card font-arabic">
+                        <div class="card-header-actions">
+                            <div>
+                                <h3 class="card-title font-arabic" style="display: flex; align-items: center; gap: 8px;">
+                                    <span>📂 الإشارات المخصصة (<span id="saved-gestures-count">0</span>)</span>
+                                    <span style="font-size: 0.75rem; background: rgba(255, 150, 0, 0.2); color: #ff9800; border: 1px solid rgba(255, 150, 0, 0.4); padding: 2px 8px; border-radius: 12px; font-weight: 500;">🔥 Firebase متصل</span>
+                                </h3>
+                                <span id="custom-stats-line" class="custom-stats-line">
+                                    0 عينة · متوسط جودة 0%
+                                </span>
+                            </div>
+                            <div class="export-actions">
+                                <button id="btn-trainer-export" class="btn-export">📤 تصدير</button>
+                                <button id="btn-trainer-import" class="btn-export">📥 استيراد</button>
+                                <button id="btn-trainer-clear-all" class="btn-clear-all">🗑️ الكل</button>
+                            </div>
+                        </div>
+                        <input type="file" id="trainer-import-file" accept="application/json,.json" class="hidden-file-input" style="display:none;">
+                        <input type="text" id="trainer-search" class="text-input trainer-search" placeholder="🔍 ابحث في الإشارات المضافة...">
+                        
+                        <div id="saved-gestures-placeholder" class="no-data-placeholder">
+                            <span class="placeholder-icon">📂</span>
+                            <p class="placeholder-text">لا توجد إشارات مطابقة. اكتب اسماً وسجل أول عينة.</p>
+                        </div>
+                        <div id="saved-gestures-list" class="saved-gestures-list hidden"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Playback Modal -->
+            <div id="playback-modal" class="playback-modal-overlay hidden">
+                <div class="playback-modal-content glass-card animate-scale-in">
+                    <div class="playback-modal-header">
+                        <h3 id="playback-modal-title" class="playback-modal-title font-arabic">👁️ مشاهدة الإشارة</h3>
+                        <button id="btn-playback-close" class="playback-modal-close">&times;</button>
+                    </div>
+                    <div class="playback-canvas-wrapper">
+                        <canvas id="playback-canvas" width="400" height="300" class="playback-canvas"></canvas>
+                        <div id="playback-frame-hud" class="playback-frame-hud font-latin">Frame: 0 / 0</div>
+                    </div>
+                    <div class="playback-controls-container">
+                        <button id="btn-playback-play" class="btn playback-play-btn btn-primary font-arabic">▶️ تشغيل</button>
+                        <input type="range" id="playback-slider" class="playback-slider" min="0" max="0" value="0">
+                    </div>
+                    <div class="playback-info-row font-arabic">
+                        <div class="playback-info-item">
+                            <span>⏱️ مدة الحركة:</span>
+                            <strong id="playback-duration">0.00 ثانية</strong>
+                        </div>
+                        <div class="playback-info-item">
+                            <span>📈 متوسط الجودة:</span>
+                            <strong id="playback-quality">0%</strong>
+                        </div>
+                        <div class="playback-info-item">
+                            <span>👐 نوع اليد:</span>
+                            <strong id="playback-hands">يد واحدة</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Developer Mode Toggle Button (accessible in bottom-left corner) -->
+        <button id="btn-toggle-dev" class="btn-floating-dev" title="Toggle Developer mode (Tab key)">
+            <i class="fa-solid fa-gears"></i> <span>Developer Console</span>
+        </button>
+
+        <!-- Right Side: Vertical Float Action Icons -->
+        <div class="floating-right-menu">
+            <!-- Icon 1: Signing Hand -->
+            <button class="menu-circle-btn" id="btn-view-trainer" title="مدرب الإشارات">
+                <i class="fa-solid fa-hands-asl-interpreting"></i>
+            </button>
+            <!-- Icon 2: Bone Editor -->
+            <button class="menu-circle-btn active" id="btn-view-editor" title="معدل الهيكل ثلاثي الأبعاد">
+                <i class="fa-solid fa-bone"></i>
+            </button>
+            <!-- Icon 3: Text to Sign -->
+            <button class="menu-circle-btn" id="btn-text-to-sign" title="تشغيل إشارة مكتوبة على الأفاتار">
+                <i class="fa-solid fa-keyboard"></i>
+            </button>
+            <!-- Icon 4: Sign to Text Translator -->
+            <button class="menu-circle-btn" id="btn-sign-to-text" title="مترجم الإشارات المباشر">
+                <i class="fa-solid fa-language"></i>
+            </button>
+        </div>
+
+        <!-- Sign to Text Translator View -->
+        <div id="translator-view" class="hidden">
+            <div class="trainer-grid">
+                <!-- Column 1: Webcam Placeholder -->
+                <div class="trainer-view-column">
+                    <div id="translator-webcam-placeholder"></div>
+                </div>
+                <!-- Column 2: Translator Controls and Text Area -->
+                <div class="trainer-controls-column">
+                    <div class="control-card glass-card">
+                        <h3 class="card-title font-arabic">🗣️ مترجم الإشارات المباشر (Sign-to-Text)</h3>
+                        
+                        <div class="input-group">
+                            <label class="input-label font-arabic">النص المترجم (Translated Text):</label>
+                            <textarea id="translator-text-output" class="text-input font-arabic" readonly style="height: 150px; font-size: 1.25rem; line-height: 1.8; resize: none; border-radius: 8px; padding: 12px; background: rgba(15, 16, 18, 0.6); color: #00ffcc; text-shadow: 0 0 10px rgba(0,255,204,0.3); border: 1px solid rgba(16, 134, 146, 0.4); direction: rtl; font-weight: bold;"></textarea>
+                        </div>
+                        
+                        <div class="translator-actions-row" style="display: flex; gap: 10px; margin-top: 10px;">
+                            <button id="btn-translator-clear" class="btn btn-secondary font-arabic" style="flex: 1; justify-content: center; padding: 10px;">
+                                🗑️ مسح النص
+                            </button>
+                            <button id="btn-translator-copy" class="btn btn-primary font-arabic" style="flex: 1; justify-content: center; padding: 10px; background: linear-gradient(135deg, #108692, #00ffcc); color: #0f1012; font-weight: 600; border: none;">
+                                📋 نسخ النص
+                            </button>
+                        </div>
+
+                        <!-- Current recognition feedback -->
+                        <div class="trainer-feedback" style="margin-top: 20px; border-top: 1px solid rgba(16, 134, 146, 0.2); padding-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <span class="font-arabic" style="color: #a4e4ec;">الإشارة الحالية المكتشفة:</span>
+                                <span id="translator-live-confidence" class="font-latin" style="color: #00ffcc; font-size: 0.9rem; font-weight: bold;">--%</span>
+                            </div>
+                            <div id="translator-live-prediction" class="feedback-pill live font-arabic" style="display: block; font-size: 1.5rem; text-align: center; padding: 12px; border-radius: 8px; background: rgba(0, 255, 204, 0.1); border: 1px solid rgba(0, 255, 204, 0.3); color: #00ffcc; text-shadow: 0 0 15px rgba(0,255,204,0.5); font-weight: bold;">
+                                جاري انتظار إشارة... (Waiting for sign)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Text-to-Sign Playback Modal -->
+        <div id="text-to-sign-modal" class="playback-modal-overlay hidden">
+            <div class="playback-modal-content glass-card animate-scale-in" style="max-width: 400px; gap: 1.5rem;">
+                <div class="playback-modal-header">
+                    <h3 class="playback-modal-title font-arabic">💬 كتابة إشارة للأفاتار</h3>
+                    <button id="btn-close-text-to-sign" class="playback-modal-close">&times;</button>
+                </div>
+                <div class="input-group">
+                    <label class="input-label font-arabic">اكتب الكلمة (التي تم تدريب الموديل عليها):</label>
+                    <input type="text" id="text-to-sign-input" class="text-input font-arabic" placeholder="مثال: أمي، شرب، صباح الخير...">
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button id="btn-play-text-to-sign" class="btn btn-primary font-arabic" style="padding: 0.6rem 1.2rem;">▶️ تشغيل الإشارة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript Logic (ES Module) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
