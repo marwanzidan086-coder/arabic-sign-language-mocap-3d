@@ -17,13 +17,13 @@ export function setupScene() {
     state.camera.position.set(0, 1.2, 2.5);
 
     state.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    state.renderer.setClearColor(0x000000, 0.0);
+    state.renderer.setClearColor(0xffffff, 1.0);
     state.renderer.setSize(el.canvasContainer.clientWidth, el.canvasContainer.clientHeight);
     state.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     state.renderer.shadowMap.enabled = state.shadows;
     state.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    state.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    state.renderer.toneMappingExposure = 1.0;
+    state.renderer.toneMapping = THREE.LinearToneMapping;
+    state.renderer.toneMappingExposure = 1.1;
     el.canvasContainer.appendChild(state.renderer.domElement);
 
     state.modelGroup = new THREE.Group();
@@ -32,10 +32,11 @@ export function setupScene() {
     state.jointHelpersGroup = new THREE.Group();
     state.scene.add(state.jointHelpersGroup);
 
-    state.ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
+    // Radiant Pure Milk White Studio Lighting
+    state.ambientLight = new THREE.AmbientLight(0xffffff, 2.4);
     state.scene.add(state.ambientLight);
 
-    state.mainLight = new THREE.DirectionalLight(0xffffff, 1.8);
+    state.mainLight = new THREE.DirectionalLight(0xffffff, 2.2);
     state.mainLight.position.set(2, 4, 3);
     state.mainLight.castShadow = true;
     state.mainLight.shadow.mapSize.width = 2048;
@@ -50,11 +51,11 @@ export function setupScene() {
     state.mainLight.shadow.camera.bottom = -d;
     state.scene.add(state.mainLight);
 
-    state.fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.9);
+    state.fillLight = new THREE.DirectionalLight(0xffffff, 1.5);
     state.fillLight.position.set(-3, 2.5, 2);
     state.scene.add(state.fillLight);
 
-    state.backLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    state.backLight = new THREE.DirectionalLight(0xffffff, 1.2);
     state.backLight.position.set(0, 3, -3);
     state.scene.add(state.backLight);
 
@@ -66,12 +67,14 @@ export function setupScene() {
     const roomHeight = 5.2;
     const roomDepth = 14;
 
-    // Room Shell (Pure White Walls & Ceiling)
+    // Room Shell (Pure Milk White Walls & Ceiling - جدران وسقف بيضاء نقية زي اللبن)
     const wallGeo = new THREE.BoxGeometry(roomWidth, roomHeight, roomDepth);
     const wallMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.85,
-        metalness: 0.02,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.18,
+        roughness: 0.65,
+        metalness: 0.0,
         side: THREE.BackSide
     });
     const roomShell = new THREE.Mesh(wallGeo, wallMat);
@@ -79,18 +82,22 @@ export function setupScene() {
     roomShell.receiveShadow = true;
     roomGroup.add(roomShell);
 
-    // Boiserie Material (Pure Milk White Satin Mouldings - بانوهات بيضاء ناصعة زي اللبن)
+    // Boiserie Material (Pure Milk White Satin Mouldings - بانوهات بيضاء ناصعة تشع بياضاً)
     const boiserieMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.45,
-        metalness: 0.02
+        emissive: 0xffffff,
+        emissiveIntensity: 0.22,
+        roughness: 0.35,
+        metalness: 0.01
     });
 
     // Architectural Trim Material (Pure Satin White - نعلات وكرانيش بيضاء نقية)
     const trimMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.4,
-        metalness: 0.02
+        emissive: 0xffffff,
+        emissiveIntensity: 0.22,
+        roughness: 0.35,
+        metalness: 0.01
     });
 
     // Helper: Create a Classic Boiserie (بانوه جداري بإطارين متداخلين باللون الأبيض النقي)
@@ -253,15 +260,17 @@ export function setupScene() {
     bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, 0);
     roomGroup.add(bbRight);
 
-    // Studio Ceiling Softbox Light Fixtures (وحدات إضاءة سقفية استوديو)
+    // Studio Ceiling Softbox Light Fixtures (وحدات إضاءة سقفية استوديو بيضاء ناصعة)
     const softboxLightMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         emissive: 0xffffff,
-        emissiveIntensity: 1.0,
-        roughness: 0.15
+        emissiveIntensity: 2.5,
+        roughness: 0.1
     });
     const softboxFrameMat = new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,
+        color: 0xffffff,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.2,
         roughness: 0.3
     });
 
@@ -281,38 +290,39 @@ export function setupScene() {
     state.scene.add(roomGroup);
     state.studioRoom = roomGroup;
 
-    // --- High-Contrast Clearly Lined White Tiled Floor (أرضية بيضاء بمربعات أصغر ومخططة بوضوح عالي) ---
+    // --- Radiant Pure Milk White Tiled Floor (أرضية سيراميك بيضاء ناصعة زي الحليب بمربعات واضحة) ---
     const tileCanvas = document.createElement('canvas');
     tileCanvas.width = 512;
     tileCanvas.height = 512;
     const tileCtx = tileCanvas.getContext('2d');
     
-    // Pure White Tile Surface
+    // Pure White Milk Tile Surface
     tileCtx.fillStyle = '#ffffff';
     tileCtx.fillRect(0, 0, 512, 512);
     
-    // Crisp, Clear, High-Contrast Slate Grout Line (خطوط بارزة وواضحة جداً)
-    tileCtx.strokeStyle = '#64748b';
-    tileCtx.lineWidth = 8;
-    tileCtx.strokeRect(0, 0, 512, 512);
-    
-    // Subtle internal bevel reflection for realism
+    // Delicate, clean, clear tile grout lines (نقية وواضحة بدون أي درجات رمادية داكنة)
     tileCtx.strokeStyle = '#e2e8f0';
     tileCtx.lineWidth = 4;
-    tileCtx.strokeRect(6, 6, 500, 500);
+    tileCtx.strokeRect(0, 0, 512, 512);
+    
+    // Pure white specular rim
+    tileCtx.strokeStyle = '#ffffff';
+    tileCtx.lineWidth = 2;
+    tileCtx.strokeRect(3, 3, 506, 506);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    // Repeat 26 gives smaller, elegant, clearly defined tiles
-    tileTexture.repeat.set(26, 26);
+    tileTexture.repeat.set(24, 24);
 
     const floorGeo = new THREE.PlaneGeometry(roomWidth, roomDepth);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.2,
-        metalness: 0.05,
-        color: 0xffffff
+        roughness: 0.1,
+        metalness: 0.0,
+        color: 0xffffff,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.15
     });
     state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
     state.whiteTilesFloor.rotation.x = -Math.PI / 2;
@@ -492,10 +502,10 @@ export function syncVisualHelpersMode() {
 }
 
 export function updateThemeBackground() {
-    let bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%)';
+    let bgStyle = '#ffffff';
     switch (state.theme) {
         case 'blender':
-            bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%)';
+            bgStyle = '#ffffff';
             break;
         case 'charcoal':
             bgStyle = 'radial-gradient(circle at 50% 35%, #24252a 0%, #1a1b1e 100%)';
@@ -504,7 +514,7 @@ export function updateThemeBackground() {
             bgStyle = 'radial-gradient(circle at 50% 35%, #0d1e33 0%, #070c14 70%, #03060a 100%)';
             break;
         case 'light':
-            bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f8fafc 55%, #e2e8f0 100%)';
+            bgStyle = '#ffffff';
             break;
     }
     document.body.style.background = bgStyle;
