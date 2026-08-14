@@ -20,7 +20,9 @@ import {
     toggleMocapMode,
     preloadMoCapModels,
     stopMoCap,
-    clearAllBoneSmoothers
+    clearAllBoneSmoothers,
+    captureCurrentPose,
+    CUSTOM_IDLE_POSE
 } from './mocap.js';
 import { startRecording, pauseRecording, stopAndExportRecording } from './mocap-recorder.js';
 
@@ -1017,6 +1019,40 @@ export function startMoCapCalibration() {
     }, 1000);
 }
 
+export function openExportPoseModal() {
+    if (!state.model) {
+        alert("يرجى تحميل أو تحديد الأفاتار أولاً!");
+        return;
+    }
+
+    const poseData = captureCurrentPose();
+    const formattedJSON = JSON.stringify(poseData.customIdlePose, null, 4);
+    
+    if (el.exportPoseTextarea) {
+        el.exportPoseTextarea.value = formattedJSON;
+    }
+    
+    // Attempt auto copy to clipboard
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(formattedJSON).then(() => {
+            showExportPoseFeedback("تم نسخ كود الوضعية تلقائياً للحافظة! 📋 يمكنك لصقه وإرساله في الشات.", "success");
+        }).catch(() => {
+            showExportPoseFeedback("تم توليد كود الوضعية بنجاح. اضغط 'نسخ الكود' لنسخه.", "info");
+        });
+    }
+
+    if (el.exportPoseModal) {
+        el.exportPoseModal.classList.remove('hidden');
+    }
+}
+
+export function showExportPoseFeedback(msg, type = 'success') {
+    if (!el.exportPoseFeedback) return;
+    el.exportPoseFeedback.className = `feedback-pill ${type} font-arabic`;
+    el.exportPoseFeedback.innerText = msg;
+    el.exportPoseFeedback.classList.remove('hidden');
+}
+
 export function setupEventListeners() {
     window.addEventListener('resize', triggerViewportResize);
 
@@ -1195,6 +1231,62 @@ export function setupEventListeners() {
         applyIdlePose();
         updateInspectorInputsFromBone();
     });
+
+    // --- Export Pose Handlers ---
+    if (el.btnExportPose) {
+        el.btnExportPose.addEventListener('click', () => {
+            openExportPoseModal();
+        });
+    }
+
+    const btnExportInspector = document.getElementById('btn-export-pose-inspector');
+    if (btnExportInspector) {
+        btnExportInspector.addEventListener('click', () => {
+            openExportPoseModal();
+        });
+    }
+
+    const btnExportEmpty = document.getElementById('btn-export-pose-empty');
+    if (btnExportEmpty) {
+        btnExportEmpty.addEventListener('click', () => {
+            openExportPoseModal();
+        });
+    }
+
+    if (el.btnCloseExportModal) {
+        el.btnCloseExportModal.addEventListener('click', () => {
+            if (el.exportPoseModal) el.exportPoseModal.classList.add('hidden');
+        });
+    }
+
+    if (el.btnCopyPoseJson) {
+        el.btnCopyPoseJson.addEventListener('click', () => {
+            if (el.exportPoseTextarea) {
+                el.exportPoseTextarea.select();
+                navigator.clipboard.writeText(el.exportPoseTextarea.value).then(() => {
+                    showExportPoseFeedback("تم النسخ بنجاح! 📋 يمكنك الآن لصق الكود وإرساله في الشات.", "success");
+                }).catch(() => {
+                    document.execCommand('copy');
+                    showExportPoseFeedback("تم النسخ بنجاح! 📋", "success");
+                });
+            }
+        });
+    }
+
+    if (el.btnSavePoseLocal) {
+        el.btnSavePoseLocal.addEventListener('click', () => {
+            try {
+                const poseData = captureCurrentPose();
+                localStorage.setItem('user_custom_idle_pose', JSON.stringify(poseData.customIdlePose));
+                Object.assign(CUSTOM_IDLE_POSE, poseData.customIdlePose);
+                cacheIdlePoseQuaternions();
+                showExportPoseFeedback("تم حفظ وتعيين هذه الوضعية كوضعية افتراضية للأفاتار بنجاح! 💾✨", "success");
+            } catch (err) {
+                console.error("Failed to save pose locally:", err);
+                showExportPoseFeedback("حدث خطأ أثناء الحفظ محلياً.", "danger");
+            }
+        });
+    }
 
     window.addEventListener('keydown', (event) => {
         if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') {

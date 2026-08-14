@@ -108,6 +108,9 @@
                 <span class="info-tag"><i class="fa-solid fa-vector-square"></i> <span id="info-vertices">0 Vertices</span></span>
             </div>
             <div class="header-actions">
+                <button id="btn-export-pose" class="btn btn-primary" title="تصدير وحفظ وضعية الأفاتار الحالية ككود">
+                    <i class="fa-solid fa-file-export"></i> تصدير الوضعية (Export)
+                </button>
                 <button id="btn-load-local" class="btn btn-secondary">
                     <i class="fa-solid fa-file-import"></i> Load Model
                     <input type="file" id="file-input" accept=".glb,.gltf,.vrm" style="display: none;">
@@ -248,6 +251,9 @@
                             <i class="fa-solid fa-hand-pointer"></i>
                             <h3>No Joint Selected</h3>
                             <p>Click on a joint in the 3D view or select one from the Outliner to manipulate it.</p>
+                            <button id="btn-export-pose-empty" class="btn btn-primary font-arabic" style="margin-top: 14px; font-size: 0.85rem; padding: 0.6rem 1rem;">
+                                <i class="fa-solid fa-file-export"></i> تصدير الوضعية الحالية (Export Pose)
+                            </button>
                         </div>
 
                         <!-- Active Inspector Panel -->
@@ -262,9 +268,12 @@
                                     <span class="meta-label">Parent:</span>
                                     <span class="meta-value" id="selected-bone-parent">Hips</span>
                                 </div>
-                                <div class="btn-group">
+                                <div class="btn-group" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
                                     <button id="btn-reset-bone" class="btn btn-secondary btn-sm">
                                         <i class="fa-solid fa-arrow-rotate-left"></i> Reset Bone
+                                    </button>
+                                    <button id="btn-export-pose-inspector" class="btn btn-primary btn-sm font-arabic">
+                                        <i class="fa-solid fa-file-export"></i> تصدير الوضعية (Export)
                                     </button>
                                 </div>
                             </div>
@@ -713,6 +722,32 @@
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button id="btn-play-text-to-sign" class="btn btn-primary font-arabic" style="padding: 0.6rem 1.2rem;">▶️ تشغيل الإشارة</button>
                 </div>
+            </div>
+        </div>
+        <!-- Export Pose Modal -->
+        <div id="export-pose-modal" class="playback-modal-overlay hidden">
+            <div class="playback-modal-content glass-card animate-scale-in" style="max-width: 580px; gap: 1.2rem;">
+                <div class="playback-modal-header">
+                    <h3 class="playback-modal-title font-arabic" style="display: flex; align-items: center; gap: 8px;">
+                        <span>📋 تصدير وضعية الأفاتار الحالية (Pose Data)</span>
+                    </h3>
+                    <button id="btn-close-export-modal" class="playback-modal-close">&times;</button>
+                </div>
+                <p class="font-arabic" style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+                    تم التقاط زوايا وتدويرات جميع العظام الحالية للأفاتار. يمكنك نسخ الكود بالأسفل وإرساله لي في الشات لتثبيته كوضعية افتراضية دائمة، أو حفظه محلياً فوراً:
+                </p>
+                <div style="position: relative;">
+                    <textarea id="export-pose-textarea" class="text-input font-latin" readonly style="height: 180px; font-size: 0.8rem; line-height: 1.4; resize: none; background: rgba(5, 10, 18, 0.85); color: #00ffcc; border-radius: 8px; padding: 12px; width: 100%; border: 1px solid var(--border-color);"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: space-between; flex-wrap: wrap;">
+                    <button id="btn-copy-pose-json" class="btn btn-primary font-arabic" style="flex: 1; justify-content: center; padding: 10px;">
+                        <i class="fa-solid fa-copy"></i> 📋 نسخ الكود للحافظة
+                    </button>
+                    <button id="btn-save-pose-local" class="btn btn-secondary font-arabic" style="flex: 1; justify-content: center; padding: 10px; border-color: rgba(0, 242, 254, 0.3);">
+                        <i class="fa-solid fa-floppy-disk"></i> 💾 حفظ وتعيين كافتراضي
+                    </button>
+                </div>
+                <div id="export-pose-feedback" class="feedback-pill success hidden font-arabic" style="text-align: center; justify-content: center;"></div>
             </div>
         </div>
     </div>
