@@ -63,9 +63,12 @@ export function setupScene() {
     const roomGroup = new THREE.Group();
     roomGroup.name = 'StudioRoom';
 
-    const roomWidth = 14;
-    const roomHeight = 5.2;
-    const roomDepth = 14;
+    const roomWidth = 9.0;
+    const roomHeight = 4.2;
+    const backZ = -1.2;
+    const frontZ = 4.4;
+    const roomDepth = frontZ - backZ;
+    const roomCenterZ = (backZ + frontZ) / 2;
 
     // Room Shell (Pure Milk White Walls & Ceiling - جدران وسقف بيضاء نقية زي اللبن)
     const wallGeo = new THREE.BoxGeometry(roomWidth, roomHeight, roomDepth);
@@ -78,7 +81,7 @@ export function setupScene() {
         side: THREE.BackSide
     });
     const roomShell = new THREE.Mesh(wallGeo, wallMat);
-    roomShell.position.y = roomHeight / 2;
+    roomShell.position.set(0, roomHeight / 2, roomCenterZ);
     roomShell.receiveShadow = true;
     roomGroup.add(roomShell);
 
@@ -167,9 +170,7 @@ export function setupScene() {
         return pGroup;
     }
 
-    // --- Back Wall Boiseries & Mouldings (بانوهات الجدار الخلفي) ---
-    const backZ = -roomDepth / 2;
-
+    // --- Back Wall Boiseries & Mouldings (بانوهات الجدار الخلفي الواضحة مباشرة خلف الشخصية) ---
     // Chair Rail (حزام منتصف الجدار الخلفي باللون الأبيض النقي)
     const chairRailGeo = new THREE.BoxGeometry(roomWidth, 0.08, 0.045);
     const chairRail = new THREE.Mesh(chairRailGeo, trimMat);
@@ -184,13 +185,13 @@ export function setupScene() {
     crown.position.set(0, roomHeight - 0.05, backZ + 0.025);
     roomGroup.add(crown);
 
-    // Back Wall Panels Layout (Upper & Lower)
+    // Back Wall Panels Layout (Upper & Lower) - موزعة بتناسق مذهل خلف الشخصية
     const backPanelsConfig = [
-        { x: 0, w: 2.6, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { x: -2.9, w: 2.1, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { x: 2.9, w: 2.1, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { x: -5.4, w: 1.8, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { x: 5.4, w: 1.8, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 }
+        { x: 0, w: 2.4, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 },
+        { x: -2.3, w: 1.6, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 },
+        { x: 2.3, w: 1.6, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 },
+        { x: -3.7, w: 0.8, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 },
+        { x: 3.7, w: 0.8, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 }
     ];
 
     backPanelsConfig.forEach(cfg => {
@@ -207,9 +208,8 @@ export function setupScene() {
 
     // --- Side Walls Boiseries (بانوهات الجدران الجانبية) ---
     const sidePanelsConfig = [
-        { z: -3.5, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { z: 0, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
-        { z: 3.5, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 }
+        { z: 0.2, w: 2.0, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 },
+        { z: 2.4, w: 2.0, hTop: 2.4, yTop: 2.5, hBtm: 0.6, yBtm: 0.55 }
     ];
 
     sidePanelsConfig.forEach(cfg => {
@@ -243,21 +243,21 @@ export function setupScene() {
     // Back & Front Baseboards
     const bbBackGeo = new THREE.BoxGeometry(roomWidth, bbHeight, bbThick);
     const bbBack = new THREE.Mesh(bbBackGeo, trimMat);
-    bbBack.position.set(0, bbHeight / 2, -roomDepth / 2 + bbThick / 2);
+    bbBack.position.set(0, bbHeight / 2, backZ + bbThick / 2);
     roomGroup.add(bbBack);
 
     const bbFront = new THREE.Mesh(bbBackGeo, trimMat);
-    bbFront.position.set(0, bbHeight / 2, roomDepth / 2 - bbThick / 2);
+    bbFront.position.set(0, bbHeight / 2, frontZ - bbThick / 2);
     roomGroup.add(bbFront);
 
     // Left & Right Baseboards
     const bbSideGeo = new THREE.BoxGeometry(bbThick, bbHeight, roomDepth);
     const bbLeft = new THREE.Mesh(bbSideGeo, trimMat);
-    bbLeft.position.set(-roomWidth / 2 + bbThick / 2, bbHeight / 2, 0);
+    bbLeft.position.set(-roomWidth / 2 + bbThick / 2, bbHeight / 2, roomCenterZ);
     roomGroup.add(bbLeft);
 
     const bbRight = new THREE.Mesh(bbSideGeo, trimMat);
-    bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, 0);
+    bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, roomCenterZ);
     roomGroup.add(bbRight);
 
     // Studio Ceiling Softbox Light Fixtures (وحدات إضاءة سقفية استوديو بيضاء ناصعة)
@@ -274,16 +274,16 @@ export function setupScene() {
         roughness: 0.3
     });
 
-    for (const offset of [-3.2, 3.2]) {
-        const frameGeo = new THREE.BoxGeometry(3.5, 0.06, 2.2);
+    for (const offset of [-2.4, 2.4]) {
+        const frameGeo = new THREE.BoxGeometry(2.8, 0.06, 2.0);
         const frame = new THREE.Mesh(frameGeo, softboxFrameMat);
-        frame.position.set(offset, roomHeight - 0.03, 0);
+        frame.position.set(offset, roomHeight - 0.03, roomCenterZ);
         roomGroup.add(frame);
 
-        const lightPanelGeo = new THREE.PlaneGeometry(3.3, 2.0);
+        const lightPanelGeo = new THREE.PlaneGeometry(2.6, 1.8);
         const lightPanel = new THREE.Mesh(lightPanelGeo, softboxLightMat);
         lightPanel.rotation.x = Math.PI / 2;
-        lightPanel.position.set(offset, roomHeight - 0.061, 0);
+        lightPanel.position.set(offset, roomHeight - 0.061, roomCenterZ);
         roomGroup.add(lightPanel);
     }
 
@@ -308,8 +308,7 @@ export function setupScene() {
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    // Repeat 16 gives clear, well-proportioned architectural floor tiles
-    tileTexture.repeat.set(16, 16);
+    tileTexture.repeat.set(14, 8);
 
     const floorGeo = new THREE.PlaneGeometry(roomWidth, roomDepth);
     const floorMat = new THREE.MeshStandardMaterial({
@@ -320,13 +319,13 @@ export function setupScene() {
     });
     state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
     state.whiteTilesFloor.rotation.x = -Math.PI / 2;
-    state.whiteTilesFloor.position.y = 0.001;
+    state.whiteTilesFloor.position.set(0, 0.001, roomCenterZ);
     state.whiteTilesFloor.receiveShadow = true;
     state.scene.add(state.whiteTilesFloor);
 
     // Grid (Subtle Crisp Grid Overlay)
     state.floorGrid = new THREE.GridHelper(roomWidth, 14, 0x000000, 0x334155);
-    state.floorGrid.position.y = 0.002;
+    state.floorGrid.position.set(0, 0.002, roomCenterZ);
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
 
