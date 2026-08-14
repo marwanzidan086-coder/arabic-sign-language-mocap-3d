@@ -58,53 +58,77 @@ export function setupScene() {
     state.backLight.position.set(0, 3, -3);
     state.scene.add(state.backLight);
 
-    // Reflective Glass Floor (Mirror Reflector + Ring Podium)
+    // Procedural White Tiles Floor (مربعات بيضاء أنيقة)
+    const tileCanvas = document.createElement('canvas');
+    tileCanvas.width = 256;
+    tileCanvas.height = 256;
+    const tileCtx = tileCanvas.getContext('2d');
+    tileCtx.fillStyle = '#ffffff';
+    tileCtx.fillRect(0, 0, 256, 256);
+    
+    // Tile borders
+    tileCtx.strokeStyle = '#cbd5e1';
+    tileCtx.lineWidth = 4;
+    tileCtx.strokeRect(0, 0, 256, 256);
+    
+    // Subtle internal bevel line
+    tileCtx.strokeStyle = '#f1f5f9';
+    tileCtx.lineWidth = 2;
+    tileCtx.strokeRect(3, 3, 250, 250);
+
+    const tileTexture = new THREE.CanvasTexture(tileCanvas);
+    tileTexture.wrapS = THREE.RepeatWrapping;
+    tileTexture.wrapT = THREE.RepeatWrapping;
+    tileTexture.repeat.set(24, 24);
+
+    const floorGeo = new THREE.PlaneGeometry(35, 35);
+    const floorMat = new THREE.MeshStandardMaterial({
+        map: tileTexture,
+        roughness: 0.15,
+        metalness: 0.1,
+        color: 0xffffff
+    });
+    state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
+    state.whiteTilesFloor.rotation.x = -Math.PI / 2;
+    state.whiteTilesFloor.position.y = 0;
+    state.whiteTilesFloor.receiveShadow = true;
+    state.scene.add(state.whiteTilesFloor);
+
+    // Reflective Glass Mirror Center Podium (Reflector on top of white tiles)
     try {
-        const mirrorGeo = new THREE.CircleGeometry(4.5, 64);
+        const mirrorGeo = new THREE.CircleGeometry(3.5, 64);
         state.groundMirror = new Reflector(mirrorGeo, {
             clipBias: 0.003,
             textureWidth: Math.min(window.innerWidth * window.devicePixelRatio, 2048),
             textureHeight: Math.min(window.innerHeight * window.devicePixelRatio, 2048),
-            color: 0x8ea2b0,
+            color: 0xa8b8c4,
             multisample: 2
         });
-        state.groundMirror.position.y = 0;
+        state.groundMirror.position.y = 0.001;
         state.groundMirror.rotation.x = -Math.PI / 2;
         state.scene.add(state.groundMirror);
 
-        // Glowing Glass Rim
-        const ringGeo = new THREE.RingGeometry(4.42, 4.5, 64);
-        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+        // Glass Rim Ring
+        const ringGeo = new THREE.RingGeometry(3.45, 3.5, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.7 });
         const ringMesh = new THREE.Mesh(ringGeo, ringMat);
         ringMesh.rotation.x = -Math.PI / 2;
         ringMesh.position.y = 0.002;
         state.scene.add(ringMesh);
     } catch (e) {
-        console.warn("Reflector fallback to standard glass floor:", e);
-        const glassGeo = new THREE.CircleGeometry(4.5, 64);
-        const glassMat = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-            roughness: 0.1,
-            metalness: 0.9,
-            transparent: true,
-            opacity: 0.7
-        });
-        state.glassFloor = new THREE.Mesh(glassGeo, glassMat);
-        state.glassFloor.rotation.x = -Math.PI / 2;
-        state.glassFloor.position.y = 0;
-        state.scene.add(state.glassFloor);
+        console.warn("Reflector fallback:", e);
     }
 
-    // Grid (subtle light gray/cyan)
-    state.floorGrid = new THREE.GridHelper(10, 20, 0x0284c7, 0x94a3b8);
+    // Grid (Subtle Crisp Grid Overlay)
+    state.floorGrid = new THREE.GridHelper(30, 30, 0x0ea5e9, 0xcbd5e1);
     state.floorGrid.position.y = 0.003;
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
 
     // Soft Shadow Plane
-    const planeGeo = new THREE.PlaneGeometry(10, 10);
-    const planeMat = new THREE.ShadowMaterial({ opacity: 0.15 });
-    state.floorPlane = new THREE.Mesh(planeGeo, planeMat);
+    const shadowGeo = new THREE.PlaneGeometry(15, 15);
+    const shadowMat = new THREE.ShadowMaterial({ opacity: 0.18 });
+    state.floorPlane = new THREE.Mesh(shadowGeo, shadowMat);
     state.floorPlane.rotation.x = -Math.PI / 2;
     state.floorPlane.position.y = 0.004;
     state.floorPlane.receiveShadow = true;
