@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
 import { state, el } from './state.js';
 import { isPlayingCustomSign } from './trainer.js';
 
@@ -31,15 +32,15 @@ export function setupScene() {
     state.jointHelpersGroup = new THREE.Group();
     state.scene.add(state.jointHelpersGroup);
 
-    state.ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+    state.ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     state.scene.add(state.ambientLight);
 
-    state.mainLight = new THREE.DirectionalLight(0xffffff, 1.3);
+    state.mainLight = new THREE.DirectionalLight(0xffffff, 1.8);
     state.mainLight.position.set(2, 4, 3);
     state.mainLight.castShadow = true;
     state.mainLight.shadow.mapSize.width = 2048;
     state.mainLight.shadow.mapSize.height = 2048;
-    state.mainLight.shadow.bias = -0.0003;
+    state.mainLight.shadow.bias = -0.0002;
     state.mainLight.shadow.camera.near = 0.5;
     state.mainLight.shadow.camera.far = 15;
     const d = 1.5;
@@ -49,20 +50,63 @@ export function setupScene() {
     state.mainLight.shadow.camera.bottom = -d;
     state.scene.add(state.mainLight);
 
-    state.fillLight = new THREE.DirectionalLight(0xbce6ff, 0.5);
-    state.fillLight.position.set(-3, 2, -2);
+    state.fillLight = new THREE.DirectionalLight(0xe0f2fe, 0.9);
+    state.fillLight.position.set(-3, 2.5, 2);
     state.scene.add(state.fillLight);
 
-    state.floorGrid = new THREE.GridHelper(20, 40, 0x108692, 0x095259);
-    state.floorGrid.position.y = 0;
+    state.backLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    state.backLight.position.set(0, 3, -3);
+    state.scene.add(state.backLight);
+
+    // Reflective Glass Floor (Mirror Reflector + Ring Podium)
+    try {
+        const mirrorGeo = new THREE.CircleGeometry(4.5, 64);
+        state.groundMirror = new Reflector(mirrorGeo, {
+            clipBias: 0.003,
+            textureWidth: Math.min(window.innerWidth * window.devicePixelRatio, 2048),
+            textureHeight: Math.min(window.innerHeight * window.devicePixelRatio, 2048),
+            color: 0x8ea2b0,
+            multisample: 2
+        });
+        state.groundMirror.position.y = 0;
+        state.groundMirror.rotation.x = -Math.PI / 2;
+        state.scene.add(state.groundMirror);
+
+        // Glowing Glass Rim
+        const ringGeo = new THREE.RingGeometry(4.42, 4.5, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f2fe, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+        const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+        ringMesh.rotation.x = -Math.PI / 2;
+        ringMesh.position.y = 0.002;
+        state.scene.add(ringMesh);
+    } catch (e) {
+        console.warn("Reflector fallback to standard glass floor:", e);
+        const glassGeo = new THREE.CircleGeometry(4.5, 64);
+        const glassMat = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            roughness: 0.1,
+            metalness: 0.9,
+            transparent: true,
+            opacity: 0.7
+        });
+        state.glassFloor = new THREE.Mesh(glassGeo, glassMat);
+        state.glassFloor.rotation.x = -Math.PI / 2;
+        state.glassFloor.position.y = 0;
+        state.scene.add(state.glassFloor);
+    }
+
+    // Grid (subtle light gray/cyan)
+    state.floorGrid = new THREE.GridHelper(10, 20, 0x0284c7, 0x94a3b8);
+    state.floorGrid.position.y = 0.003;
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
 
-    const planeGeo = new THREE.PlaneGeometry(50, 50);
-    const planeMat = new THREE.ShadowMaterial({ opacity: 0.35 });
+    // Soft Shadow Plane
+    const planeGeo = new THREE.PlaneGeometry(10, 10);
+    const planeMat = new THREE.ShadowMaterial({ opacity: 0.15 });
     state.floorPlane = new THREE.Mesh(planeGeo, planeMat);
     state.floorPlane.rotation.x = -Math.PI / 2;
-    state.floorPlane.position.y = 0;
+    state.floorPlane.position.y = 0.004;
     state.floorPlane.receiveShadow = true;
     state.scene.add(state.floorPlane);
 }
@@ -223,29 +267,24 @@ export function syncVisualHelpersMode() {
 }
 
 export function updateThemeBackground() {
-    let colorHex = '#0c6a74';
+    let bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%)';
     switch (state.theme) {
         case 'blender':
-            colorHex = '#0c6a74';
+            bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%)';
             break;
         case 'charcoal':
-            colorHex = '#24252a';
+            bgStyle = 'radial-gradient(circle at 50% 35%, #24252a 0%, #1a1b1e 100%)';
             break;
         case 'midnight':
-            colorHex = '#0a0b0d';
+            bgStyle = 'radial-gradient(circle at 50% 35%, #0d1e33 0%, #070c14 70%, #03060a 100%)';
             break;
         case 'light':
-            colorHex = '#dadce0';
+            bgStyle = 'radial-gradient(circle at 50% 35%, #ffffff 0%, #f8fafc 55%, #e2e8f0 100%)';
             break;
     }
-    document.body.style.backgroundColor = colorHex;
+    document.body.style.background = bgStyle;
     state.scene.background = null;
-    
-    if (state.theme === 'midnight') {
-        state.scene.fog = new THREE.FogExp2(0x0a0b0d, 0.12);
-    } else {
-        state.scene.fog = null;
-    }
+    state.scene.fog = null;
 }
 
 export function triggerViewportResize() {
