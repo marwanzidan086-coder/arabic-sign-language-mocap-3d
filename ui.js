@@ -631,47 +631,6 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 export function showPoseExportModal(jsonStr) {
-    let modal = document.getElementById('pose-export-modal');
-    if (modal) {
-        modal.remove();
-    }
-    
-    modal = document.createElement('div');
-    modal.id = 'pose-export-modal';
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100vw';
-    modal.style.height = '100vh';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
-    modal.style.zIndex = '10000';
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    modal.style.fontFamily = '"Outfit", sans-serif';
-    
-    const content = document.createElement('div');
-    content.style.backgroundColor = '#18191c';
-    content.style.borderRadius = '12px';
-    content.style.padding = '24px';
-    content.style.width = '90%';
-    content.style.maxWidth = '550px';
-    content.style.border = '1px solid #108692';
-    content.style.boxShadow = '0 10px 30px rgba(0,0,0,0.6)';
-    content.style.display = 'flex';
-    content.style.flexDirection = 'column';
-    content.style.gap = '15px';
-    
-    const header = document.createElement('div');
-    header.style.display = 'flex';
-    header.style.justifyContent = 'space-between';
-    header.style.alignItems = 'center';
-    header.style.color = '#00ffcc';
-    header.style.fontWeight = 'bold';
-    header.style.fontSize = '18px';
-    header.innerHTML = '<span><i class="fa-solid fa-file-export"></i> تصدير وضعية المفاصل / Pose Export</span>';
-    
-export function showPoseExportModal(jsonStr) {
     // Attempt automatic clipboard copy immediately
     let autoCopied = false;
     if (navigator.clipboard && typeof navigator.clipboard.writeText === 'function') {
