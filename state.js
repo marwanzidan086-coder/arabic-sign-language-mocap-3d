@@ -12,6 +12,8 @@ export const state = {
     fillLight: null,
     floorGrid: null,
     floorPlane: null,
+    whiteTilesFloor: null,
+    studioRoom: null,
     skeletonHelper: null,
     jointHelpersGroup: null, // Contains interactive joint spheres
     mappedAvatarBones: {},

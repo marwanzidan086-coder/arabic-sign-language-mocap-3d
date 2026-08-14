@@ -58,7 +58,101 @@ export function setupScene() {
     state.backLight.position.set(0, 3, -3);
     state.scene.add(state.backLight);
 
-    // Procedural White Tiles Floor (مربعات بيضاء أنيقة)
+    // --- 3D Studio Room Enclosure (غرفة الاستوديو المحكمة ثلاثية الأبعاد) ---
+    const roomGroup = new THREE.Group();
+    roomGroup.name = 'StudioRoom';
+
+    const roomWidth = 14;
+    const roomHeight = 5.2;
+    const roomDepth = 14;
+
+    // Room Shell (Walls & Ceiling with BackSide)
+    const wallGeo = new THREE.BoxGeometry(roomWidth, roomHeight, roomDepth);
+    const wallMat = new THREE.MeshStandardMaterial({
+        color: 0xf8fafc,
+        roughness: 0.88,
+        metalness: 0.02,
+        side: THREE.BackSide
+    });
+    const roomShell = new THREE.Mesh(wallGeo, wallMat);
+    roomShell.position.y = roomHeight / 2;
+    roomShell.receiveShadow = true;
+    roomGroup.add(roomShell);
+
+    // Architectural Baseboards (نعلات جدارية سفلية واقعية)
+    const baseboardMat = new THREE.MeshStandardMaterial({
+        color: 0xe2e8f0,
+        roughness: 0.45,
+        metalness: 0.15
+    });
+    const bbHeight = 0.12;
+    const bbThick = 0.03;
+
+    // Back & Front Baseboards
+    const bbBackGeo = new THREE.BoxGeometry(roomWidth, bbHeight, bbThick);
+    const bbBack = new THREE.Mesh(bbBackGeo, baseboardMat);
+    bbBack.position.set(0, bbHeight / 2, -roomDepth / 2 + bbThick / 2);
+    roomGroup.add(bbBack);
+
+    const bbFront = new THREE.Mesh(bbBackGeo, baseboardMat);
+    bbFront.position.set(0, bbHeight / 2, roomDepth / 2 - bbThick / 2);
+    roomGroup.add(bbFront);
+
+    // Left & Right Baseboards
+    const bbSideGeo = new THREE.BoxGeometry(bbThick, bbHeight, roomDepth);
+    const bbLeft = new THREE.Mesh(bbSideGeo, baseboardMat);
+    bbLeft.position.set(-roomWidth / 2 + bbThick / 2, bbHeight / 2, 0);
+    roomGroup.add(bbLeft);
+
+    const bbRight = new THREE.Mesh(bbSideGeo, baseboardMat);
+    bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, 0);
+    roomGroup.add(bbRight);
+
+    // Studio Ceiling Softbox Light Fixtures (وحدات إضاءة سقفية استوديو)
+    const softboxLightMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0xf8fafc,
+        emissiveIntensity: 0.95,
+        roughness: 0.2
+    });
+    const softboxFrameMat = new THREE.MeshStandardMaterial({
+        color: 0x334155,
+        roughness: 0.5
+    });
+
+    for (const offset of [-3.2, 3.2]) {
+        const frameGeo = new THREE.BoxGeometry(3.5, 0.06, 2.2);
+        const frame = new THREE.Mesh(frameGeo, softboxFrameMat);
+        frame.position.set(offset, roomHeight - 0.03, 0);
+        roomGroup.add(frame);
+
+        const lightPanelGeo = new THREE.PlaneGeometry(3.3, 2.0);
+        const lightPanel = new THREE.Mesh(lightPanelGeo, softboxLightMat);
+        lightPanel.rotation.x = Math.PI / 2;
+        lightPanel.position.set(offset, roomHeight - 0.061, 0);
+        roomGroup.add(lightPanel);
+    }
+
+    // Back Wall Studio Accent Lines (إضاءة ليد غير مباشرة جمالية على الجدار الخلفي)
+    const accentMat = new THREE.MeshStandardMaterial({
+        color: 0x38bdf8,
+        emissive: 0x0284c7,
+        emissiveIntensity: 0.85,
+        roughness: 0.2
+    });
+    const accentLineGeo = new THREE.BoxGeometry(roomWidth * 0.8, 0.035, 0.02);
+    const accentLine = new THREE.Mesh(accentLineGeo, accentMat);
+    accentLine.position.set(0, 3.4, -roomDepth / 2 + 0.015);
+    roomGroup.add(accentLine);
+
+    const accentLineBottom = new THREE.Mesh(accentLineGeo, accentMat);
+    accentLineBottom.position.set(0, 0.8, -roomDepth / 2 + 0.015);
+    roomGroup.add(accentLineBottom);
+
+    state.scene.add(roomGroup);
+    state.studioRoom = roomGroup;
+
+    // Procedural White Tiles Floor (مربعات بيضاء أنيقة متطابقة مع حجم الغرفة)
     const tileCanvas = document.createElement('canvas');
     tileCanvas.width = 256;
     tileCanvas.height = 256;
@@ -79,29 +173,29 @@ export function setupScene() {
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(24, 24);
+    tileTexture.repeat.set(14, 14);
 
-    const floorGeo = new THREE.PlaneGeometry(35, 35);
+    const floorGeo = new THREE.PlaneGeometry(roomWidth, roomDepth);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.2,
+        roughness: 0.25,
         metalness: 0.05,
         color: 0xffffff
     });
     state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
     state.whiteTilesFloor.rotation.x = -Math.PI / 2;
-    state.whiteTilesFloor.position.y = 0;
+    state.whiteTilesFloor.position.y = 0.001;
     state.whiteTilesFloor.receiveShadow = true;
     state.scene.add(state.whiteTilesFloor);
 
     // Grid (Subtle Crisp Grid Overlay)
-    state.floorGrid = new THREE.GridHelper(30, 30, 0x38bdf8, 0xcbd5e1);
-    state.floorGrid.position.y = 0.001;
+    state.floorGrid = new THREE.GridHelper(roomWidth, 14, 0x38bdf8, 0xcbd5e1);
+    state.floorGrid.position.y = 0.002;
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
 
     // Soft Shadow Plane
-    const shadowGeo = new THREE.PlaneGeometry(15, 15);
+    const shadowGeo = new THREE.PlaneGeometry(12, 12);
     const shadowMat = new THREE.ShadowMaterial({ opacity: 0.18 });
     state.floorPlane = new THREE.Mesh(shadowGeo, shadowMat);
     state.floorPlane.rotation.x = -Math.PI / 2;
@@ -116,9 +210,9 @@ export function setupControls() {
     state.orbitControls.enableDamping = true;
     state.orbitControls.dampingFactor = 0.05;
     state.orbitControls.screenSpacePanning = true;
-    state.orbitControls.maxPolarAngle = Math.PI / 2 + 0.05;
-    state.orbitControls.minDistance = 0.2;
-    state.orbitControls.maxDistance = 15;
+    state.orbitControls.maxPolarAngle = Math.PI / 2 - 0.02;
+    state.orbitControls.minDistance = 0.4;
+    state.orbitControls.maxDistance = 5.8;
     state.orbitControls.target.set(0, 1.0, 0);
 
     state.transformControls = new TransformControls(state.camera, state.renderer.domElement);
