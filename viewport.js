@@ -79,18 +79,27 @@ export function setupScene() {
     roomShell.receiveShadow = true;
     roomGroup.add(roomShell);
 
-    // Boiserie & Trim Material (Satin White Mouldings - بانوهات بيضاء ناصعة)
+    // Boiserie Material (Glowing Blue Accent Strips - بانوهات كأنها أشرطة زرقاء متوهجة)
     const boiserieMat = new THREE.MeshStandardMaterial({
+        color: 0x0284c7,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.9,
+        roughness: 0.2,
+        metalness: 0.1
+    });
+
+    // Architectural Trim Material (Pure Satin White - نعلات وكرانيش بيضاء نقية)
+    const trimMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        roughness: 0.45,
+        roughness: 0.4,
         metalness: 0.05
     });
 
-    // Helper: Create a Classic Boiserie (بانوه جداري بإطارين متداخلين)
-    function createBoiserie(width, height, thickness = 0.035, frameWidth = 0.055) {
+    // Helper: Create a Classic Boiserie (بانوه جداري بأشرطة زرقاء)
+    function createBoiserie(width, height, thickness = 0.035, frameWidth = 0.05) {
         const pGroup = new THREE.Group();
 
-        // Outer Frame
+        // Outer Blue Frame
         const topBar = new THREE.Mesh(new THREE.BoxGeometry(width, frameWidth, thickness), boiserieMat);
         topBar.position.set(0, height / 2 - frameWidth / 2, thickness / 2);
         topBar.receiveShadow = true;
@@ -116,12 +125,12 @@ export function setupScene() {
         rBar.castShadow = true;
         pGroup.add(rBar);
 
-        // Inner Nested Frame for true luxury depth
+        // Inner Nested Blue Strip Frame
         const margin = 0.12;
         const innerW = width - margin * 2;
         const innerH = height - margin * 2;
-        const innerThick = thickness * 0.75;
-        const innerFrameW = 0.035;
+        const innerThick = thickness * 0.8;
+        const innerFrameW = 0.03;
 
         if (innerW > 0.3 && innerH > 0.3) {
             const inTop = new THREE.Mesh(new THREE.BoxGeometry(innerW, innerFrameW, innerThick), boiserieMat);
@@ -148,17 +157,22 @@ export function setupScene() {
     // --- Back Wall Boiseries & Mouldings (بانوهات الجدار الخلفي) ---
     const backZ = -roomDepth / 2;
 
-    // Chair Rail (حزام منتصف الجدار الخلفي)
+    // Chair Rail (حزام منتصف الجدار الخلفي باللون الأبيض مع شريط أزرق مدمج)
     const chairRailGeo = new THREE.BoxGeometry(roomWidth, 0.08, 0.045);
-    const chairRail = new THREE.Mesh(chairRailGeo, boiserieMat);
+    const chairRail = new THREE.Mesh(chairRailGeo, trimMat);
     chairRail.position.set(0, 1.05, backZ + 0.0225);
     chairRail.receiveShadow = true;
     chairRail.castShadow = true;
     roomGroup.add(chairRail);
 
+    const chairRailAccentGeo = new THREE.BoxGeometry(roomWidth, 0.015, 0.05);
+    const chairRailAccent = new THREE.Mesh(chairRailAccentGeo, boiserieMat);
+    chairRailAccent.position.set(0, 1.05, backZ + 0.026);
+    roomGroup.add(chairRailAccent);
+
     // Crown Moulding (كورنيشة سقفية علوية)
     const crownGeo = new THREE.BoxGeometry(roomWidth, 0.10, 0.05);
-    const crown = new THREE.Mesh(crownGeo, boiserieMat);
+    const crown = new THREE.Mesh(crownGeo, trimMat);
     crown.position.set(0, roomHeight - 0.05, backZ + 0.025);
     roomGroup.add(crown);
 
@@ -214,27 +228,27 @@ export function setupScene() {
         roomGroup.add(rightLower);
     });
 
-    // Architectural Baseboards (نعلات جدارية سفلية)
+    // Architectural Baseboards (نعلات جدارية سفلية بيضاء نقية)
     const bbHeight = 0.14;
     const bbThick = 0.035;
 
     // Back & Front Baseboards
     const bbBackGeo = new THREE.BoxGeometry(roomWidth, bbHeight, bbThick);
-    const bbBack = new THREE.Mesh(bbBackGeo, boiserieMat);
+    const bbBack = new THREE.Mesh(bbBackGeo, trimMat);
     bbBack.position.set(0, bbHeight / 2, -roomDepth / 2 + bbThick / 2);
     roomGroup.add(bbBack);
 
-    const bbFront = new THREE.Mesh(bbBackGeo, boiserieMat);
+    const bbFront = new THREE.Mesh(bbBackGeo, trimMat);
     bbFront.position.set(0, bbHeight / 2, roomDepth / 2 - bbThick / 2);
     roomGroup.add(bbFront);
 
     // Left & Right Baseboards
     const bbSideGeo = new THREE.BoxGeometry(bbThick, bbHeight, roomDepth);
-    const bbLeft = new THREE.Mesh(bbSideGeo, boiserieMat);
+    const bbLeft = new THREE.Mesh(bbSideGeo, trimMat);
     bbLeft.position.set(-roomWidth / 2 + bbThick / 2, bbHeight / 2, 0);
     roomGroup.add(bbLeft);
 
-    const bbRight = new THREE.Mesh(bbSideGeo, boiserieMat);
+    const bbRight = new THREE.Mesh(bbSideGeo, trimMat);
     bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, 0);
     roomGroup.add(bbRight);
 
