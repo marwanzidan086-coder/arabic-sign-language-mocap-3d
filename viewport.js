@@ -79,27 +79,25 @@ export function setupScene() {
     roomShell.receiveShadow = true;
     roomGroup.add(roomShell);
 
-    // Boiserie Material (Glowing Blue Accent Strips - بانوهات كأنها أشرطة زرقاء متوهجة)
+    // Boiserie Material (Pure Milk White Satin Mouldings - بانوهات بيضاء ناصعة زي اللبن)
     const boiserieMat = new THREE.MeshStandardMaterial({
-        color: 0x0284c7,
-        emissive: 0x0369a1,
-        emissiveIntensity: 0.9,
-        roughness: 0.2,
-        metalness: 0.1
+        color: 0xffffff,
+        roughness: 0.45,
+        metalness: 0.02
     });
 
     // Architectural Trim Material (Pure Satin White - نعلات وكرانيش بيضاء نقية)
     const trimMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         roughness: 0.4,
-        metalness: 0.05
+        metalness: 0.02
     });
 
-    // Helper: Create a Classic Boiserie (بانوه جداري بأشرطة زرقاء)
-    function createBoiserie(width, height, thickness = 0.035, frameWidth = 0.05) {
+    // Helper: Create a Classic Boiserie (بانوه جداري بإطارين متداخلين باللون الأبيض النقي)
+    function createBoiserie(width, height, thickness = 0.035, frameWidth = 0.055) {
         const pGroup = new THREE.Group();
 
-        // Outer Blue Frame
+        // Outer White Frame
         const topBar = new THREE.Mesh(new THREE.BoxGeometry(width, frameWidth, thickness), boiserieMat);
         topBar.position.set(0, height / 2 - frameWidth / 2, thickness / 2);
         topBar.receiveShadow = true;
@@ -125,29 +123,37 @@ export function setupScene() {
         rBar.castShadow = true;
         pGroup.add(rBar);
 
-        // Inner Nested Blue Strip Frame
+        // Inner Nested Frame for true luxury depth
         const margin = 0.12;
         const innerW = width - margin * 2;
         const innerH = height - margin * 2;
-        const innerThick = thickness * 0.8;
-        const innerFrameW = 0.03;
+        const innerThick = thickness * 0.75;
+        const innerFrameW = 0.035;
 
         if (innerW > 0.3 && innerH > 0.3) {
             const inTop = new THREE.Mesh(new THREE.BoxGeometry(innerW, innerFrameW, innerThick), boiserieMat);
             inTop.position.set(0, innerH / 2 - innerFrameW / 2, innerThick / 2);
+            inTop.receiveShadow = true;
+            inTop.castShadow = true;
             pGroup.add(inTop);
 
             const inBtm = new THREE.Mesh(new THREE.BoxGeometry(innerW, innerFrameW, innerThick), boiserieMat);
             inBtm.position.set(0, -innerH / 2 + innerFrameW / 2, innerThick / 2);
+            inBtm.receiveShadow = true;
+            inBtm.castShadow = true;
             pGroup.add(inBtm);
 
             const inSideH = Math.max(0.01, innerH - innerFrameW * 2);
             const inLeft = new THREE.Mesh(new THREE.BoxGeometry(innerFrameW, inSideH, innerThick), boiserieMat);
             inLeft.position.set(-innerW / 2 + innerFrameW / 2, 0, innerThick / 2);
+            inLeft.receiveShadow = true;
+            inLeft.castShadow = true;
             pGroup.add(inLeft);
 
             const inRight = new THREE.Mesh(new THREE.BoxGeometry(innerFrameW, inSideH, innerThick), boiserieMat);
             inRight.position.set(innerW / 2 - innerFrameW / 2, 0, innerThick / 2);
+            inRight.receiveShadow = true;
+            inRight.castShadow = true;
             pGroup.add(inRight);
         }
 
@@ -157,18 +163,13 @@ export function setupScene() {
     // --- Back Wall Boiseries & Mouldings (بانوهات الجدار الخلفي) ---
     const backZ = -roomDepth / 2;
 
-    // Chair Rail (حزام منتصف الجدار الخلفي باللون الأبيض مع شريط أزرق مدمج)
+    // Chair Rail (حزام منتصف الجدار الخلفي باللون الأبيض النقي)
     const chairRailGeo = new THREE.BoxGeometry(roomWidth, 0.08, 0.045);
     const chairRail = new THREE.Mesh(chairRailGeo, trimMat);
     chairRail.position.set(0, 1.05, backZ + 0.0225);
     chairRail.receiveShadow = true;
     chairRail.castShadow = true;
     roomGroup.add(chairRail);
-
-    const chairRailAccentGeo = new THREE.BoxGeometry(roomWidth, 0.015, 0.05);
-    const chairRailAccent = new THREE.Mesh(chairRailAccentGeo, boiserieMat);
-    chairRailAccent.position.set(0, 1.05, backZ + 0.026);
-    roomGroup.add(chairRailAccent);
 
     // Crown Moulding (كورنيشة سقفية علوية)
     const crownGeo = new THREE.BoxGeometry(roomWidth, 0.10, 0.05);
