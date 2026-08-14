@@ -290,39 +290,33 @@ export function setupScene() {
     state.scene.add(roomGroup);
     state.studioRoom = roomGroup;
 
-    // --- Radiant Pure Milk White Tiled Floor (أرضية سيراميك بيضاء ناصعة زي الحليب بمربعات واضحة) ---
+    // --- Pure White Tiled Floor with Sharp Black Grid Lines (أرضية بيضاء بحدود وبلاطات مخططة بخطوط سوداء واضحة) ---
     const tileCanvas = document.createElement('canvas');
     tileCanvas.width = 512;
     tileCanvas.height = 512;
     const tileCtx = tileCanvas.getContext('2d');
     
-    // Pure White Milk Tile Surface
+    // Pure Milk White Tile Center
     tileCtx.fillStyle = '#ffffff';
     tileCtx.fillRect(0, 0, 512, 512);
     
-    // Delicate, clean, clear tile grout lines (نقية وواضحة بدون أي درجات رمادية داكنة)
-    tileCtx.strokeStyle = '#e2e8f0';
-    tileCtx.lineWidth = 4;
+    // Solid Jet Black Tile Border Lines (حدود البلاط - خطوط سوداء حادة ومحددة جداً)
+    tileCtx.strokeStyle = '#000000';
+    tileCtx.lineWidth = 12;
     tileCtx.strokeRect(0, 0, 512, 512);
-    
-    // Pure white specular rim
-    tileCtx.strokeStyle = '#ffffff';
-    tileCtx.lineWidth = 2;
-    tileCtx.strokeRect(3, 3, 506, 506);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(24, 24);
+    // Repeat 16 gives clear, well-proportioned architectural floor tiles
+    tileTexture.repeat.set(16, 16);
 
     const floorGeo = new THREE.PlaneGeometry(roomWidth, roomDepth);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.1,
+        roughness: 0.25,
         metalness: 0.0,
-        color: 0xffffff,
-        emissive: 0xffffff,
-        emissiveIntensity: 0.15
+        color: 0xffffff
     });
     state.whiteTilesFloor = new THREE.Mesh(floorGeo, floorMat);
     state.whiteTilesFloor.rotation.x = -Math.PI / 2;
@@ -331,7 +325,7 @@ export function setupScene() {
     state.scene.add(state.whiteTilesFloor);
 
     // Grid (Subtle Crisp Grid Overlay)
-    state.floorGrid = new THREE.GridHelper(roomWidth, 14, 0x38bdf8, 0xcbd5e1);
+    state.floorGrid = new THREE.GridHelper(roomWidth, 14, 0x000000, 0x334155);
     state.floorGrid.position.y = 0.002;
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
