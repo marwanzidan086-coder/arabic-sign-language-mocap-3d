@@ -58,7 +58,7 @@ export function setupScene() {
     state.backLight.position.set(0, 3, -3);
     state.scene.add(state.backLight);
 
-    // --- 3D Studio Room Enclosure (غرفة الاستوديو المحكمة ثلاثية الأبعاد) ---
+    // --- 3D Studio Room Enclosure (غرفة الاستوديو البيضاء مع بانوهات معمارية) ---
     const roomGroup = new THREE.Group();
     roomGroup.name = 'StudioRoom';
 
@@ -66,11 +66,11 @@ export function setupScene() {
     const roomHeight = 5.2;
     const roomDepth = 14;
 
-    // Room Shell (Walls & Ceiling with BackSide)
+    // Room Shell (Pure White Walls & Ceiling)
     const wallGeo = new THREE.BoxGeometry(roomWidth, roomHeight, roomDepth);
     const wallMat = new THREE.MeshStandardMaterial({
-        color: 0xf8fafc,
-        roughness: 0.88,
+        color: 0xffffff,
+        roughness: 0.85,
         metalness: 0.02,
         side: THREE.BackSide
     });
@@ -79,45 +79,175 @@ export function setupScene() {
     roomShell.receiveShadow = true;
     roomGroup.add(roomShell);
 
-    // Architectural Baseboards (نعلات جدارية سفلية واقعية)
-    const baseboardMat = new THREE.MeshStandardMaterial({
-        color: 0xe2e8f0,
+    // Boiserie & Trim Material (Satin White Mouldings - بانوهات بيضاء ناصعة)
+    const boiserieMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
         roughness: 0.45,
-        metalness: 0.15
+        metalness: 0.05
     });
-    const bbHeight = 0.12;
-    const bbThick = 0.03;
+
+    // Helper: Create a Classic Boiserie (بانوه جداري بإطارين متداخلين)
+    function createBoiserie(width, height, thickness = 0.035, frameWidth = 0.055) {
+        const pGroup = new THREE.Group();
+
+        // Outer Frame
+        const topBar = new THREE.Mesh(new THREE.BoxGeometry(width, frameWidth, thickness), boiserieMat);
+        topBar.position.set(0, height / 2 - frameWidth / 2, thickness / 2);
+        topBar.receiveShadow = true;
+        topBar.castShadow = true;
+        pGroup.add(topBar);
+
+        const btmBar = new THREE.Mesh(new THREE.BoxGeometry(width, frameWidth, thickness), boiserieMat);
+        btmBar.position.set(0, -height / 2 + frameWidth / 2, thickness / 2);
+        btmBar.receiveShadow = true;
+        btmBar.castShadow = true;
+        pGroup.add(btmBar);
+
+        const sideH = Math.max(0.01, height - frameWidth * 2);
+        const lBar = new THREE.Mesh(new THREE.BoxGeometry(frameWidth, sideH, thickness), boiserieMat);
+        lBar.position.set(-width / 2 + frameWidth / 2, 0, thickness / 2);
+        lBar.receiveShadow = true;
+        lBar.castShadow = true;
+        pGroup.add(lBar);
+
+        const rBar = new THREE.Mesh(new THREE.BoxGeometry(frameWidth, sideH, thickness), boiserieMat);
+        rBar.position.set(width / 2 - frameWidth / 2, 0, thickness / 2);
+        rBar.receiveShadow = true;
+        rBar.castShadow = true;
+        pGroup.add(rBar);
+
+        // Inner Nested Frame for true luxury depth
+        const margin = 0.12;
+        const innerW = width - margin * 2;
+        const innerH = height - margin * 2;
+        const innerThick = thickness * 0.75;
+        const innerFrameW = 0.035;
+
+        if (innerW > 0.3 && innerH > 0.3) {
+            const inTop = new THREE.Mesh(new THREE.BoxGeometry(innerW, innerFrameW, innerThick), boiserieMat);
+            inTop.position.set(0, innerH / 2 - innerFrameW / 2, innerThick / 2);
+            pGroup.add(inTop);
+
+            const inBtm = new THREE.Mesh(new THREE.BoxGeometry(innerW, innerFrameW, innerThick), boiserieMat);
+            inBtm.position.set(0, -innerH / 2 + innerFrameW / 2, innerThick / 2);
+            pGroup.add(inBtm);
+
+            const inSideH = Math.max(0.01, innerH - innerFrameW * 2);
+            const inLeft = new THREE.Mesh(new THREE.BoxGeometry(innerFrameW, inSideH, innerThick), boiserieMat);
+            inLeft.position.set(-innerW / 2 + innerFrameW / 2, 0, innerThick / 2);
+            pGroup.add(inLeft);
+
+            const inRight = new THREE.Mesh(new THREE.BoxGeometry(innerFrameW, inSideH, innerThick), boiserieMat);
+            inRight.position.set(innerW / 2 - innerFrameW / 2, 0, innerThick / 2);
+            pGroup.add(inRight);
+        }
+
+        return pGroup;
+    }
+
+    // --- Back Wall Boiseries & Mouldings (بانوهات الجدار الخلفي) ---
+    const backZ = -roomDepth / 2;
+
+    // Chair Rail (حزام منتصف الجدار الخلفي)
+    const chairRailGeo = new THREE.BoxGeometry(roomWidth, 0.08, 0.045);
+    const chairRail = new THREE.Mesh(chairRailGeo, boiserieMat);
+    chairRail.position.set(0, 1.05, backZ + 0.0225);
+    chairRail.receiveShadow = true;
+    chairRail.castShadow = true;
+    roomGroup.add(chairRail);
+
+    // Crown Moulding (كورنيشة سقفية علوية)
+    const crownGeo = new THREE.BoxGeometry(roomWidth, 0.10, 0.05);
+    const crown = new THREE.Mesh(crownGeo, boiserieMat);
+    crown.position.set(0, roomHeight - 0.05, backZ + 0.025);
+    roomGroup.add(crown);
+
+    // Back Wall Panels Layout (Upper & Lower)
+    const backPanelsConfig = [
+        { x: 0, w: 2.6, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { x: -2.9, w: 2.1, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { x: 2.9, w: 2.1, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { x: -5.4, w: 1.8, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { x: 5.4, w: 1.8, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 }
+    ];
+
+    backPanelsConfig.forEach(cfg => {
+        // Upper Boiserie
+        const upperBoiserie = createBoiserie(cfg.w, cfg.hTop);
+        upperBoiserie.position.set(cfg.x, cfg.yTop, backZ);
+        roomGroup.add(upperBoiserie);
+
+        // Lower Boiserie
+        const lowerBoiserie = createBoiserie(cfg.w, cfg.hBtm, 0.025, 0.045);
+        lowerBoiserie.position.set(cfg.x, cfg.yBtm, backZ);
+        roomGroup.add(lowerBoiserie);
+    });
+
+    // --- Side Walls Boiseries (بانوهات الجدران الجانبية) ---
+    const sidePanelsConfig = [
+        { z: -3.5, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { z: 0, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 },
+        { z: 3.5, w: 2.4, hTop: 3.2, yTop: 2.95, hBtm: 0.65, yBtm: 0.55 }
+    ];
+
+    sidePanelsConfig.forEach(cfg => {
+        // Left Wall
+        const leftUpper = createBoiserie(cfg.w, cfg.hTop);
+        leftUpper.rotation.y = Math.PI / 2;
+        leftUpper.position.set(-roomWidth / 2, cfg.yTop, cfg.z);
+        roomGroup.add(leftUpper);
+
+        const leftLower = createBoiserie(cfg.w, cfg.hBtm, 0.025, 0.045);
+        leftLower.rotation.y = Math.PI / 2;
+        leftLower.position.set(-roomWidth / 2, cfg.yBtm, cfg.z);
+        roomGroup.add(leftLower);
+
+        // Right Wall
+        const rightUpper = createBoiserie(cfg.w, cfg.hTop);
+        rightUpper.rotation.y = -Math.PI / 2;
+        rightUpper.position.set(roomWidth / 2, cfg.yTop, cfg.z);
+        roomGroup.add(rightUpper);
+
+        const rightLower = createBoiserie(cfg.w, cfg.hBtm, 0.025, 0.045);
+        rightLower.rotation.y = -Math.PI / 2;
+        rightLower.position.set(roomWidth / 2, cfg.yBtm, cfg.z);
+        roomGroup.add(rightLower);
+    });
+
+    // Architectural Baseboards (نعلات جدارية سفلية)
+    const bbHeight = 0.14;
+    const bbThick = 0.035;
 
     // Back & Front Baseboards
     const bbBackGeo = new THREE.BoxGeometry(roomWidth, bbHeight, bbThick);
-    const bbBack = new THREE.Mesh(bbBackGeo, baseboardMat);
+    const bbBack = new THREE.Mesh(bbBackGeo, boiserieMat);
     bbBack.position.set(0, bbHeight / 2, -roomDepth / 2 + bbThick / 2);
     roomGroup.add(bbBack);
 
-    const bbFront = new THREE.Mesh(bbBackGeo, baseboardMat);
+    const bbFront = new THREE.Mesh(bbBackGeo, boiserieMat);
     bbFront.position.set(0, bbHeight / 2, roomDepth / 2 - bbThick / 2);
     roomGroup.add(bbFront);
 
     // Left & Right Baseboards
     const bbSideGeo = new THREE.BoxGeometry(bbThick, bbHeight, roomDepth);
-    const bbLeft = new THREE.Mesh(bbSideGeo, baseboardMat);
+    const bbLeft = new THREE.Mesh(bbSideGeo, boiserieMat);
     bbLeft.position.set(-roomWidth / 2 + bbThick / 2, bbHeight / 2, 0);
     roomGroup.add(bbLeft);
 
-    const bbRight = new THREE.Mesh(bbSideGeo, baseboardMat);
+    const bbRight = new THREE.Mesh(bbSideGeo, boiserieMat);
     bbRight.position.set(roomWidth / 2 - bbThick / 2, bbHeight / 2, 0);
     roomGroup.add(bbRight);
 
     // Studio Ceiling Softbox Light Fixtures (وحدات إضاءة سقفية استوديو)
     const softboxLightMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        emissive: 0xf8fafc,
-        emissiveIntensity: 0.95,
-        roughness: 0.2
+        emissive: 0xffffff,
+        emissiveIntensity: 1.0,
+        roughness: 0.15
     });
     const softboxFrameMat = new THREE.MeshStandardMaterial({
-        color: 0x334155,
-        roughness: 0.5
+        color: 0xe2e8f0,
+        roughness: 0.3
     });
 
     for (const offset of [-3.2, 3.2]) {
@@ -133,52 +263,39 @@ export function setupScene() {
         roomGroup.add(lightPanel);
     }
 
-    // Back Wall Studio Accent Lines (إضاءة ليد غير مباشرة جمالية على الجدار الخلفي)
-    const accentMat = new THREE.MeshStandardMaterial({
-        color: 0x38bdf8,
-        emissive: 0x0284c7,
-        emissiveIntensity: 0.85,
-        roughness: 0.2
-    });
-    const accentLineGeo = new THREE.BoxGeometry(roomWidth * 0.8, 0.035, 0.02);
-    const accentLine = new THREE.Mesh(accentLineGeo, accentMat);
-    accentLine.position.set(0, 3.4, -roomDepth / 2 + 0.015);
-    roomGroup.add(accentLine);
-
-    const accentLineBottom = new THREE.Mesh(accentLineGeo, accentMat);
-    accentLineBottom.position.set(0, 0.8, -roomDepth / 2 + 0.015);
-    roomGroup.add(accentLineBottom);
-
     state.scene.add(roomGroup);
     state.studioRoom = roomGroup;
 
-    // Procedural White Tiles Floor (مربعات بيضاء أنيقة متطابقة مع حجم الغرفة)
+    // --- High-Contrast Clearly Lined White Tiled Floor (أرضية بيضاء بمربعات أصغر ومخططة بوضوح عالي) ---
     const tileCanvas = document.createElement('canvas');
-    tileCanvas.width = 256;
-    tileCanvas.height = 256;
+    tileCanvas.width = 512;
+    tileCanvas.height = 512;
     const tileCtx = tileCanvas.getContext('2d');
+    
+    // Pure White Tile Surface
     tileCtx.fillStyle = '#ffffff';
-    tileCtx.fillRect(0, 0, 256, 256);
+    tileCtx.fillRect(0, 0, 512, 512);
     
-    // Tile borders
-    tileCtx.strokeStyle = '#cbd5e1';
+    // Crisp, Clear, High-Contrast Slate Grout Line (خطوط بارزة وواضحة جداً)
+    tileCtx.strokeStyle = '#64748b';
+    tileCtx.lineWidth = 8;
+    tileCtx.strokeRect(0, 0, 512, 512);
+    
+    // Subtle internal bevel reflection for realism
+    tileCtx.strokeStyle = '#e2e8f0';
     tileCtx.lineWidth = 4;
-    tileCtx.strokeRect(0, 0, 256, 256);
-    
-    // Subtle internal bevel line
-    tileCtx.strokeStyle = '#f1f5f9';
-    tileCtx.lineWidth = 2;
-    tileCtx.strokeRect(3, 3, 250, 250);
+    tileCtx.strokeRect(6, 6, 500, 500);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(14, 14);
+    // Repeat 26 gives smaller, elegant, clearly defined tiles
+    tileTexture.repeat.set(26, 26);
 
     const floorGeo = new THREE.PlaneGeometry(roomWidth, roomDepth);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.25,
+        roughness: 0.2,
         metalness: 0.05,
         color: 0xffffff
     });
