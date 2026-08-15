@@ -594,3 +594,26 @@ body.view-translator .webcam-view-wrapper {
         transform: scale(1);
     }
 }
+
+.btn-card-play-avatar {
+    background: rgba(0, 242, 254, 0.12);
+    border: 1px solid rgba(0, 242, 254, 0.4);
+    color: #00f2fe;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-right: 8px;
+}
+
+.btn-card-play-avatar:hover {
+    background: var(--accent-gradient);
+    color: #041017;
+    box-shadow: 0 0 12px rgba(0, 242, 254, 0.5);
+    transform: scale(1.05);
+}

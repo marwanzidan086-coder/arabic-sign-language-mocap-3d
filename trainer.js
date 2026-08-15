@@ -637,8 +637,9 @@ function renderGesturesList() {
     html += `
       <div class="saved-gesture-item ${isLiveMatch ? 'live-match' : ''}">
         <div class="item-main-info">
-          <span class="item-tag">🧠 مخصص</span>
+          <span class="item-tag">🧠 إشارة</span>
           <strong class="item-name font-arabic">${gesture.name}</strong>
+          <button class="btn-card-play-avatar" data-gesture-name="${gesture.name}" title="تشغيل الإشارة على المجسم ثلاثي الأبعاد">▶️ تشغيل</button>
           <span class="item-time font-latin">${new Date(gesture.updatedAt).toLocaleTimeString()}</span>
         </div>
         <div class="item-stats font-latin">
@@ -654,6 +655,15 @@ function renderGesturesList() {
   });
 
   el.gesturesList.innerHTML = html;
+
+  // Add click listeners to play on avatar directly
+  el.gesturesList.querySelectorAll('.btn-card-play-avatar').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const gName = btn.dataset.gestureName;
+      playGestureSign(gName);
+    });
+  });
 
   // Add click listeners to play, delete samples, delete gestures
   el.gesturesList.querySelectorAll('.sample-play-btn').forEach(btn => {
@@ -944,76 +954,84 @@ function handlePlayTextToSign() {
 
 export function playGestureSign(gestureName) {
   const gesture = customGestures.find(g => g.name.toLowerCase() === gestureName.toLowerCase().trim());
-  if (!gesture || gesture.samples.length === 0) {
+  if (!gesture) {
     alert(`لم يتم العثور على إشارة مسجلة باسم "${gestureName}"`);
     return;
   }
 
   stopCustomSignPlayback();
 
-  const sample = gesture.samples[0];
-  let idx = 0;
-  isPlayingCustomSign = true;
+  // 1. Try procedural master sign motion first for studio-grade realism
+  import('./sign-animator.js').then(({ playProceduralSign }) => {
+    const handled = playProceduralSign(gesture.name, () => {
+      isPlayingCustomSign = false;
+    });
 
-  console.log(`Starting playback of custom sign: "${gestureName}" (${sample.frames.length} frames)`);
-
-  const frameDelay = Math.round(sample.durationMs / sample.frames.length) || 40;
-
-  customSignPlaybackInterval = setInterval(() => {
-    if (!isPlayingCustomSign) {
-      clearInterval(customSignPlaybackInterval);
+    if (handled) {
+      isPlayingCustomSign = true;
       return;
     }
 
-    const frame = sample.frames[idx];
-    if (frame) {
-      // Feed pose to avatar
-      if (frame.pose) {
-        import('./mocap-pose.js').then(m => {
-          m.mapPoseToAvatar(frame.pose, frame.poseWorld || null, performance.now() / 1000);
-        });
+    // 2. Fallback to sample frames if custom recorded gesture
+    if (!gesture.samples || gesture.samples.length === 0) return;
+    const sample = gesture.samples[0];
+    let idx = 0;
+    isPlayingCustomSign = true;
+
+    const frameDelay = Math.round(sample.durationMs / sample.frames.length) || 40;
+
+    customSignPlaybackInterval = setInterval(() => {
+      if (!isPlayingCustomSign) {
+        clearInterval(customSignPlaybackInterval);
+        return;
       }
 
-      // Feed hands to avatar
-      if (frame.hands && frame.hands.length > 0) {
-        import('./mocap-pose.js').then(m => {
-          const worldHands = frame.handsWorld || [];
-          if (frame.hands.length === 1) {
-            const hand = frame.hands[0];
-            const wHand = worldHands[0] || null;
-            const side = (hand[0] && hand[0].x > 0.5) ? 'Left' : 'Right';
-            m.mapHandToAvatar(hand, wHand, side, performance.now() / 1000);
-          } else {
-            const hand1 = frame.hands[0];
-            const hand2 = frame.hands[1];
-            const wHand1 = worldHands[0] || null;
-            const wHand2 = worldHands[1] || null;
-            m.mapHandToAvatar(hand1, wHand1, 'Right', performance.now() / 1000);
-            m.mapHandToAvatar(hand2, wHand2, 'Left', performance.now() / 1000);
-          }
-        });
-      }
+      const frame = sample.frames[idx];
+      if (frame) {
+        if (frame.pose) {
+          import('./mocap-pose.js').then(m => {
+            m.mapPoseToAvatar(frame.pose, frame.poseWorld || null, performance.now() / 1000);
+          });
+        }
 
-      idx++;
-      if (idx >= sample.frames.length) {
+        if (frame.hands && frame.hands.length > 0) {
+          import('./mocap-pose.js').then(m => {
+            const worldHands = frame.handsWorld || [];
+            if (frame.hands.length === 1) {
+              const hand = frame.hands[0];
+              const wHand = worldHands[0] || null;
+              const side = (hand[0] && hand[0].x > 0.5) ? 'Left' : 'Right';
+              m.mapHandToAvatar(hand, wHand, side, performance.now() / 1000);
+            } else {
+              const hand1 = frame.hands[0];
+              const hand2 = frame.hands[1];
+              const wHand1 = worldHands[0] || null;
+              const wHand2 = worldHands[1] || null;
+              m.mapHandToAvatar(hand1, wHand1, 'Right', performance.now() / 1000);
+              m.mapHandToAvatar(hand2, wHand2, 'Left', performance.now() / 1000);
+            }
+          });
+        }
+
+        idx++;
+        if (idx >= sample.frames.length) {
+          isPlayingCustomSign = false;
+          clearInterval(customSignPlaybackInterval);
+
+          setTimeout(() => {
+            if (!isPlayingCustomSign) {
+              import('./mocap.js').then(m => {
+                m.applyIdlePose();
+              });
+            }
+          }, 1000);
+        }
+      } else {
         isPlayingCustomSign = false;
         clearInterval(customSignPlaybackInterval);
-        console.log("Playback of custom sign finished.");
-
-        // Apply idle pose after 1 second
-        setTimeout(() => {
-          if (!isPlayingCustomSign) {
-            import('./mocap.js').then(m => {
-              m.applyIdlePose();
-            });
-          }
-        }, 1000);
       }
-    } else {
-      isPlayingCustomSign = false;
-      clearInterval(customSignPlaybackInterval);
-    }
-  }, frameDelay);
+    }, frameDelay);
+  });
 }
 
 export function stopCustomSignPlayback() {
@@ -1022,4 +1040,7 @@ export function stopCustomSignPlayback() {
     clearInterval(customSignPlaybackInterval);
     customSignPlaybackInterval = null;
   }
+  import('./sign-animator.js').then(({ stopActiveSignAnimation }) => {
+    stopActiveSignAnimation();
+  });
 }
