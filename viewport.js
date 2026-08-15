@@ -96,23 +96,38 @@ function createCleanStudio() {
     const group = new THREE.Group();
     group.name = 'CleanStudioRoom';
 
-    // Pure White Floor Plane (مطابق تماماً للشكل الأصلي في الصورة 1 و 2)
+    // Pure White Tiled Floor with Bold Jet Black Grid Lines
+    const tileCanvas = document.createElement('canvas');
+    tileCanvas.width = 512;
+    tileCanvas.height = 512;
+    const tileCtx = tileCanvas.getContext('2d');
+    
+    // Pure Milk White Tile Surface
+    tileCtx.fillStyle = '#ffffff';
+    tileCtx.fillRect(0, 0, 512, 512);
+    
+    // Solid Jet Black Bold Thick Border Lines (خطوط سوداء عريضة وثخينة وواضحة جداً كما في الصورة 1 و 2)
+    tileCtx.strokeStyle = '#000000';
+    tileCtx.lineWidth = 16;
+    tileCtx.strokeRect(0, 0, 512, 512);
+
+    const tileTexture = new THREE.CanvasTexture(tileCanvas);
+    tileTexture.wrapS = THREE.RepeatWrapping;
+    tileTexture.wrapT = THREE.RepeatWrapping;
+    tileTexture.repeat.set(16, 16); // الحجم الأصغر الأنيق للمربعات المطابق للصورة 1 و 2
+
     const floorGeo = new THREE.PlaneGeometry(14, 14);
     const floorMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
+        map: tileTexture,
         roughness: 0.25,
-        metalness: 0.0
+        metalness: 0.0,
+        color: 0xffffff
     });
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
     floor.position.set(0, 0.001, 0);
     floor.receiveShadow = true;
     group.add(floor);
-
-    // Large Crisp Black/Slate Perspective Grid Lines (10 تقسيمات فقط على 14 متر لمربعات واسعة وأنيقة)
-    const grid = new THREE.GridHelper(14, 10, 0x000000, 0x334155);
-    grid.position.set(0, 0.002, 0);
-    group.add(grid);
 
     return group;
 }
