@@ -91,10 +91,46 @@ const ROOM_WIDTH = 14.0;
 const ROOM_DEPTH = 14.0;
 const ROOM_HEIGHT = 5.2;
 
-// --- 1. Modern White Studio Environment ---
-function createStudioRoom() {
+// --- 1. Clean Open Infinite Studio Environment (الافتراضي - بدون جدران أو عوائق) ---
+function createCleanStudio() {
     const group = new THREE.Group();
-    group.name = 'StudioRoom';
+    group.name = 'CleanStudioRoom';
+
+    // White Tiled Floor with Sharp Black Grid Lines
+    const tileCanvas = document.createElement('canvas');
+    tileCanvas.width = 512;
+    tileCanvas.height = 512;
+    const tileCtx = tileCanvas.getContext('2d');
+    tileCtx.fillStyle = '#ffffff';
+    tileCtx.fillRect(0, 0, 512, 512);
+    tileCtx.strokeStyle = '#000000';
+    tileCtx.lineWidth = 12;
+    tileCtx.strokeRect(0, 0, 512, 512);
+
+    const tileTexture = new THREE.CanvasTexture(tileCanvas);
+    tileTexture.wrapS = THREE.RepeatWrapping;
+    tileTexture.wrapT = THREE.RepeatWrapping;
+    tileTexture.repeat.set(16, 16);
+
+    const floorMat = new THREE.MeshStandardMaterial({
+        map: tileTexture,
+        roughness: 0.22,
+        metalness: 0.01,
+        color: 0xffffff
+    });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_WIDTH * 1.5, ROOM_DEPTH * 1.5), floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0, 0.001, 0);
+    floor.receiveShadow = true;
+    group.add(floor);
+
+    return group;
+}
+
+// --- 2. Luxury Boiserie Studio Environment (غرفة البانوهات المعمارية البيضاء) ---
+function createBoiserieRoom() {
+    const group = new THREE.Group();
+    group.name = 'BoiserieRoom';
 
     // Room Shell (Pure Milk White Walls & Ceiling)
     const wallGeo = new THREE.BoxGeometry(ROOM_WIDTH, ROOM_HEIGHT, ROOM_DEPTH);
@@ -631,9 +667,8 @@ export function setRoomEnvironment(roomName) {
             document.body.style.background = '#180d26';
             break;
 
-        case 'studio':
-        default:
-            newRoom = createStudioRoom();
+        case 'boiserie':
+            newRoom = createBoiserieRoom();
             if (state.ambientLight) {
                 state.ambientLight.color.set(0xffffff);
                 state.ambientLight.intensity = 2.4;
@@ -652,6 +687,32 @@ export function setRoomEnvironment(roomName) {
             }
             if (state.renderer) state.renderer.setClearColor(0xffffff, 1.0);
             if (state.floorPlane) state.floorPlane.material.opacity = 0.18;
+            if (state.floorGrid) state.floorGrid.visible = state.showGrid;
+            document.body.style.background = '#ffffff';
+            break;
+
+        case 'studio':
+        default:
+            newRoom = createCleanStudio();
+            if (state.ambientLight) {
+                state.ambientLight.color.set(0xffffff);
+                state.ambientLight.intensity = 2.4;
+            }
+            if (state.mainLight) {
+                state.mainLight.color.set(0xffffff);
+                state.mainLight.intensity = 2.2;
+            }
+            if (state.fillLight) {
+                state.fillLight.color.set(0xffffff);
+                state.fillLight.intensity = 1.5;
+            }
+            if (state.backLight) {
+                state.backLight.color.set(0xffffff);
+                state.backLight.intensity = 1.2;
+            }
+            if (state.renderer) state.renderer.setClearColor(0xffffff, 1.0);
+            if (state.floorPlane) state.floorPlane.material.opacity = 0.18;
+            if (state.floorGrid) state.floorGrid.visible = true;
             document.body.style.background = '#ffffff';
             break;
     }
