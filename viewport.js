@@ -106,9 +106,9 @@ function createCleanStudio() {
     tileCtx.fillStyle = '#ffffff';
     tileCtx.fillRect(0, 0, 512, 512);
     
-    // Solid Jet Black Bold Thick Border Lines (خطوط سوداء عريضة وثخينة وواضحة جداً كما في الصورة 1 و 2)
+    // Solid Jet Black Balanced Border Lines (خطوط سوداء واضحة ومعتدلة - وسطية وأنيقة)
     tileCtx.strokeStyle = '#000000';
-    tileCtx.lineWidth = 16;
+    tileCtx.lineWidth = 6;
     tileCtx.strokeRect(0, 0, 512, 512);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
