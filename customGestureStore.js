@@ -1,5 +1,6 @@
 import { del, get, set } from 'https://cdn.jsdelivr.net/npm/idb-keyval@6/+esm';
 import { CUSTOM_GESTURE_CONFIG, migrateLegacyGestures, mergeGestureLists, normalizeStoredGesture } from './customGestureRecognizer.js';
+import { DEFAULT_PRETRAINED_GESTURES } from './default-signs-dataset.js';
 import { 
   saveAllGesturesToFirestore, 
   loadGesturesFromFirestore, 
@@ -16,8 +17,14 @@ export async function loadCustomGestures() {
     const legacy = loadLegacyGestures();
     if (legacy.length > 0) {
       localNormalized = legacy;
-      await set(CUSTOM_GESTURE_CONFIG.STORAGE_KEY, localNormalized);
+    } else {
+      localNormalized = DEFAULT_PRETRAINED_GESTURES;
     }
+    await set(CUSTOM_GESTURE_CONFIG.STORAGE_KEY, localNormalized);
+  } else {
+    // Merge pre-trained standard gestures if not already present
+    localNormalized = mergeGestureLists(DEFAULT_PRETRAINED_GESTURES, localNormalized);
+    await set(CUSTOM_GESTURE_CONFIG.STORAGE_KEY, localNormalized);
   }
 
   // Attempt to sync and fetch from Firebase Cloud
