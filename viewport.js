@@ -305,14 +305,67 @@ function createClassroomRoom() {
 
     const backZ = -ROOM_DEPTH / 2 + 0.04;
 
-    // Back Wall Feature 1: Modern Classroom Whiteboard / Smart Display Frame
-    const boardFrameMat = new THREE.MeshStandardMaterial({ color: 0x2d3748, roughness: 0.3, metalness: 0.7 });
+    // Back Wall Feature 1: Modern Classroom Whiteboard with Large "WELCOME" Writing
+    const boardFrameMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3, metalness: 0.7 });
+    
+    // High-Resolution Classroom Whiteboard with "WELCOME" Handwriting / Chalk Marker Art
+    const boardCanvas = document.createElement('canvas');
+    boardCanvas.width = 2048;
+    boardCanvas.height = 1024;
+    const bCtx = boardCanvas.getContext('2d');
+
+    // Clean Porcelain Whiteboard Surface
+    bCtx.fillStyle = '#f8fafc';
+    bCtx.fillRect(0, 0, 2048, 1024);
+
+    // Subtle Board Top Header Stripe
+    bCtx.fillStyle = '#e2e8f0';
+    bCtx.fillRect(0, 0, 2048, 28);
+
+    bCtx.save();
+    bCtx.textAlign = 'center';
+    bCtx.textBaseline = 'middle';
+
+    // Main Big Bold Chalk / Marker "WELCOME" Text
+    bCtx.font = '900 200px "Plus Jakarta Sans", "Outfit", "Arial Black", sans-serif';
+    bCtx.fillStyle = '#0f172a';
+    bCtx.shadowColor = 'rgba(15, 23, 42, 0.2)';
+    bCtx.shadowBlur = 10;
+    bCtx.shadowOffsetX = 3;
+    bCtx.shadowOffsetY = 3;
+    bCtx.fillText('WELCOME', 1024, 430);
+
+    // Chalk Underline with Hand-drawn Curve
+    bCtx.shadowColor = 'transparent';
+    bCtx.strokeStyle = '#0284c7';
+    bCtx.lineWidth = 14;
+    bCtx.lineCap = 'round';
+    bCtx.beginPath();
+    bCtx.moveTo(580, 560);
+    bCtx.bezierCurveTo(800, 585, 1220, 545, 1468, 565);
+    bCtx.stroke();
+
+    // Friendly Sub-text
+    bCtx.font = '600 68px "Outfit", "Plus Jakarta Sans", sans-serif';
+    bCtx.fillStyle = '#475569';
+    bCtx.fillText('Arabic Sign Language 3D Studio', 1024, 660);
+
+    // Friendly Hand-Drawn Stars
+    bCtx.fillStyle = '#0284c7';
+    bCtx.font = '80px sans-serif';
+    bCtx.fillText('✦', 450, 420);
+    bCtx.fillText('✦', 1600, 420);
+
+    bCtx.restore();
+
+    const boardTexture = new THREE.CanvasTexture(boardCanvas);
+    boardTexture.anisotropy = 16;
+    boardTexture.needsUpdate = true;
+
     const boardSurfaceMat = new THREE.MeshStandardMaterial({
-        color: 0xf8fafc,
-        emissive: 0xf8fafc,
-        emissiveIntensity: 0.12,
-        roughness: 0.2,
-        metalness: 0.02
+        map: boardTexture,
+        roughness: 0.3,
+        metalness: 0.05
     });
 
     const boardFrame = new THREE.Mesh(new THREE.BoxGeometry(6.2, 2.8, 0.08), boardFrameMat);
