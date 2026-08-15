@@ -96,7 +96,7 @@ function createCleanStudio() {
     const group = new THREE.Group();
     group.name = 'CleanStudioRoom';
 
-    // Pure White Tiled Floor with Bold Jet Black Grid Lines
+    // Pure White Tiled Floor with Balanced Jet Black Grid Lines
     const tileCanvas = document.createElement('canvas');
     tileCanvas.width = 512;
     tileCanvas.height = 512;
@@ -106,15 +106,15 @@ function createCleanStudio() {
     tileCtx.fillStyle = '#ffffff';
     tileCtx.fillRect(0, 0, 512, 512);
     
-    // Solid Jet Black Balanced Border Lines (خطوط سوداء واضحة ومعتدلة - وسطية وأنيقة)
+    // Solid Jet Black Balanced Border Lines
     tileCtx.strokeStyle = '#000000';
-    tileCtx.lineWidth = 6;
+    tileCtx.lineWidth = 5;
     tileCtx.strokeRect(0, 0, 512, 512);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(16, 16); // الحجم الأصغر الأنيق للمربعات المطابق للصورة 1 و 2
+    tileTexture.repeat.set(20, 20); // تصغير المربعات قليلاً كما طُلب
 
     const floorGeo = new THREE.PlaneGeometry(14, 14);
     const floorMat = new THREE.MeshStandardMaterial({
@@ -395,193 +395,7 @@ function createClassroomRoom() {
     return group;
 }
 
-// --- 3. Dark Cyber Neon Lab Environment ---
-function createCyberRoom() {
-    const group = new THREE.Group();
-    group.name = 'CyberRoom';
-
-    // Room Shell (Matte Obsidian Carbon)
-    const wallGeo = new THREE.BoxGeometry(ROOM_WIDTH, ROOM_HEIGHT, ROOM_DEPTH);
-    const wallMat = new THREE.MeshStandardMaterial({
-        color: 0x060911,
-        roughness: 0.85,
-        metalness: 0.2,
-        side: THREE.BackSide
-    });
-    const shell = new THREE.Mesh(wallGeo, wallMat);
-    shell.position.set(0, ROOM_HEIGHT / 2, 0);
-    shell.receiveShadow = true;
-    group.add(shell);
-
-    const backZ = -ROOM_DEPTH / 2 + 0.04;
-
-    // Glowing Neon Strips on Walls
-    const neonCyanMat = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 3.5,
-        roughness: 0.1
-    });
-    const neonMagentaMat = new THREE.MeshStandardMaterial({
-        color: 0xf43f5e,
-        emissive: 0xf43f5e,
-        emissiveIntensity: 3.5,
-        roughness: 0.1
-    });
-
-    // Horizontal cyber stripes
-    const cStrip1 = new THREE.Mesh(new THREE.BoxGeometry(ROOM_WIDTH, 0.06, 0.03), neonCyanMat);
-    cStrip1.position.set(0, 1.2, backZ);
-    group.add(cStrip1);
-
-    const cStrip2 = new THREE.Mesh(new THREE.BoxGeometry(ROOM_WIDTH, 0.06, 0.03), neonMagentaMat);
-    cStrip2.position.set(0, 3.8, backZ);
-    group.add(cStrip2);
-
-    // Cyber Hex Grid Center Emblem Frame
-    const frameMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4, metalness: 0.8 });
-    const centerDisplay = new THREE.Mesh(new THREE.BoxGeometry(5.0, 2.2, 0.06), frameMat);
-    centerDisplay.position.set(0, 2.5, backZ + 0.03);
-    group.add(centerDisplay);
-
-    const holoScreenMat = new THREE.MeshStandardMaterial({
-        color: 0x00f2fe,
-        emissive: 0x00f2fe,
-        emissiveIntensity: 0.4,
-        roughness: 0.2,
-        transparent: true,
-        opacity: 0.85
-    });
-    const holoScreen = new THREE.Mesh(new THREE.PlaneGeometry(4.7, 1.9), holoScreenMat);
-    holoScreen.position.set(0, 2.5, backZ + 0.065);
-    group.add(holoScreen);
-
-    // Ceiling Neon Geometry
-    const ceilNeon = new THREE.Mesh(new THREE.RingGeometry(2.0, 2.15, 6), neonCyanMat);
-    ceilNeon.rotation.x = Math.PI / 2;
-    ceilNeon.position.set(0, ROOM_HEIGHT - 0.05, 0);
-    group.add(ceilNeon);
-
-    // Dark Reflective Cyber Grid Floor
-    const gridCanvas = document.createElement('canvas');
-    gridCanvas.width = 512;
-    gridCanvas.height = 512;
-    const gCtx = gridCanvas.getContext('2d');
-    gCtx.fillStyle = '#060a14';
-    gCtx.fillRect(0, 0, 512, 512);
-
-    // Glowing cyan grid border
-    gCtx.strokeStyle = '#00f2fe';
-    gCtx.lineWidth = 8;
-    gCtx.strokeRect(0, 0, 512, 512);
-
-    // Inner fine grid
-    gCtx.strokeStyle = 'rgba(0, 242, 254, 0.25)';
-    gCtx.lineWidth = 2;
-    gCtx.strokeRect(64, 64, 384, 384);
-
-    const cyberTexture = new THREE.CanvasTexture(gridCanvas);
-    cyberTexture.wrapS = THREE.RepeatWrapping;
-    cyberTexture.wrapT = THREE.RepeatWrapping;
-    cyberTexture.repeat.set(14, 14);
-
-    const floorMat = new THREE.MeshStandardMaterial({
-        map: cyberTexture,
-        roughness: 0.15,
-        metalness: 0.4,
-        color: 0xffffff
-    });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_WIDTH, ROOM_DEPTH), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0.001, 0);
-    floor.receiveShadow = true;
-    group.add(floor);
-
-    return group;
-}
-
-// --- 4. Golden Sunset / Theatrical Stage Environment ---
-function createSunsetRoom() {
-    const group = new THREE.Group();
-    group.name = 'SunsetRoom';
-
-    // Room Shell (Deep Twilight Indigo Backdrop)
-    const wallGeo = new THREE.BoxGeometry(ROOM_WIDTH, ROOM_HEIGHT, ROOM_DEPTH);
-    const wallMat = new THREE.MeshStandardMaterial({
-        color: 0x180d26,
-        roughness: 0.75,
-        metalness: 0.1,
-        side: THREE.BackSide
-    });
-    const shell = new THREE.Mesh(wallGeo, wallMat);
-    shell.position.set(0, ROOM_HEIGHT / 2, 0);
-    shell.receiveShadow = true;
-    group.add(shell);
-
-    const backZ = -ROOM_DEPTH / 2 + 0.04;
-
-    // Glowing Golden Sun / Horizon Halo Disc on Back Wall
-    const sunMat = new THREE.MeshStandardMaterial({
-        color: 0xff8800,
-        emissive: 0xffaa22,
-        emissiveIntensity: 2.8,
-        roughness: 0.2
-    });
-    const sunDisc = new THREE.Mesh(new THREE.CircleGeometry(2.4, 32), sunMat);
-    sunDisc.position.set(0, 2.6, backZ + 0.03);
-    group.add(sunDisc);
-
-    // Atmospheric Warm Stage Rings
-    const amberRingMat = new THREE.MeshStandardMaterial({
-        color: 0xffbb44,
-        emissive: 0xff9900,
-        emissiveIntensity: 2.0,
-        roughness: 0.2
-    });
-    const outerRing = new THREE.Mesh(new THREE.RingGeometry(2.6, 2.75, 32), amberRingMat);
-    outerRing.position.set(0, 2.6, backZ + 0.04);
-    group.add(outerRing);
-
-    // Glossy Dark Reflective Stage Floor
-    const stageCanvas = document.createElement('canvas');
-    stageCanvas.width = 512;
-    stageCanvas.height = 512;
-    const sCtx = stageCanvas.getContext('2d');
-    sCtx.fillStyle = '#0e0817';
-    sCtx.fillRect(0, 0, 512, 512);
-
-    // Warm radial stage highlight
-    const radGrad = sCtx.createRadialGradient(256, 256, 10, 256, 256, 250);
-    radGrad.addColorStop(0, 'rgba(255, 160, 50, 0.2)');
-    radGrad.addColorStop(1, 'rgba(14, 8, 23, 0)');
-    sCtx.fillStyle = radGrad;
-    sCtx.fillRect(0, 0, 512, 512);
-
-    sCtx.strokeStyle = 'rgba(255, 170, 60, 0.2)';
-    sCtx.lineWidth = 4;
-    sCtx.strokeRect(0, 0, 512, 512);
-
-    const stageTexture = new THREE.CanvasTexture(stageCanvas);
-    stageTexture.wrapS = THREE.RepeatWrapping;
-    stageTexture.wrapT = THREE.RepeatWrapping;
-    stageTexture.repeat.set(12, 12);
-
-    const floorMat = new THREE.MeshStandardMaterial({
-        map: stageTexture,
-        roughness: 0.12,
-        metalness: 0.35,
-        color: 0xffffff
-    });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_WIDTH, ROOM_DEPTH), floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0.001, 0);
-    floor.receiveShadow = true;
-    group.add(floor);
-
-    return group;
-}
-
-// --- Dynamic Environment Switcher ---
+// --- Dynamic Environment Switcher (استوديو مفتوح، غرفة بانوهات، قاعة تدريب) ---
 export function setRoomEnvironment(roomName) {
     if (!state.scene || !state.roomEnvironmentGroup) return;
 
@@ -624,52 +438,6 @@ export function setRoomEnvironment(roomName) {
             if (state.renderer) state.renderer.setClearColor(0xece7df, 1.0);
             if (state.floorPlane) state.floorPlane.material.opacity = 0.22;
             document.body.style.background = '#ded8ce';
-            break;
-
-        case 'cyber':
-            newRoom = createCyberRoom();
-            if (state.ambientLight) {
-                state.ambientLight.color.set(0x0e1b30);
-                state.ambientLight.intensity = 0.85;
-            }
-            if (state.mainLight) {
-                state.mainLight.color.set(0x00f2fe);
-                state.mainLight.intensity = 2.4;
-            }
-            if (state.fillLight) {
-                state.fillLight.color.set(0x38bdf8);
-                state.fillLight.intensity = 1.6;
-            }
-            if (state.backLight) {
-                state.backLight.color.set(0xf43f5e);
-                state.backLight.intensity = 2.2;
-            }
-            if (state.renderer) state.renderer.setClearColor(0x050811, 1.0);
-            if (state.floorPlane) state.floorPlane.material.opacity = 0.35;
-            document.body.style.background = '#060911';
-            break;
-
-        case 'sunset':
-            newRoom = createSunsetRoom();
-            if (state.ambientLight) {
-                state.ambientLight.color.set(0x2d1537);
-                state.ambientLight.intensity = 1.2;
-            }
-            if (state.mainLight) {
-                state.mainLight.color.set(0xffaa44);
-                state.mainLight.intensity = 2.5;
-            }
-            if (state.fillLight) {
-                state.fillLight.color.set(0x818cf8);
-                state.fillLight.intensity = 1.3;
-            }
-            if (state.backLight) {
-                state.backLight.color.set(0xff5500);
-                state.backLight.intensity = 2.4;
-            }
-            if (state.renderer) state.renderer.setClearColor(0x12091c, 1.0);
-            if (state.floorPlane) state.floorPlane.material.opacity = 0.28;
-            document.body.style.background = '#180d26';
             break;
 
         case 'boiserie':
