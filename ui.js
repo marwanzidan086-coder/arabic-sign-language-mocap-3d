@@ -176,9 +176,6 @@ export function toggleDevMode(forceState) {
 export function loadModel(urlOrBuffer) {
     if (el.modelLoadingScreen) {
         el.modelLoadingScreen.classList.remove('fade-out');
-        if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '20%';
-        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> جاري تنزيل ملف المجسم ثلاثي الأبعاد...';
-        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '20%';
     }
 
     el.modelName.innerText = "Loading Model...";
@@ -220,19 +217,8 @@ export function loadModel(urlOrBuffer) {
 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
-
-    const onLoadProgress = (xhr) => {
-        if (xhr.lengthComputable && xhr.total > 0) {
-            const percent = Math.min(85, Math.round((xhr.loaded / xhr.total) * 75) + 15);
-            if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = `${percent}%`;
-            if (el.modelLoadPercent) el.modelLoadPercent.innerText = `${percent}%`;
-        }
-    };
     
     const onLoadSuccess = (gltf) => {
-        if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '90%';
-        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-person-running fa-fade"></i> تهيئة الهيكل العظمي والمفاصل الحركية...';
-        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '90%';
 
         const vrm = gltf.userData.vrm;
         if (vrm) {
@@ -431,14 +417,11 @@ export function loadModel(urlOrBuffer) {
         updateMeshVisibility();
 
         if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '100%';
-        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #00ffcc;"></i> اكتمل تجهيز الشخصية 3D بنجاح!';
-        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '100%';
-
         setTimeout(() => {
             if (el.modelLoadingScreen) {
                 el.modelLoadingScreen.classList.add('fade-out');
             }
-        }, 600);
+        }, 350);
     };
 
     const onLoadError = (error) => {
@@ -446,16 +429,15 @@ export function loadModel(urlOrBuffer) {
         el.modelName.innerText = "Error Loading File";
         el.boneTree.innerHTML = '<div class="tree-loading" style="color: #ff4d4d;"><i class="fa-solid fa-circle-xmark"></i> Failed to parse model. Check console.</div>';
         
-        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #f43f5e;"></i> فشل تنزيل ملف المجسم!';
         setTimeout(() => {
             if (el.modelLoadingScreen) {
                 el.modelLoadingScreen.classList.add('fade-out');
             }
-        }, 1200);
+        }, 800);
     };
 
     if (typeof urlOrBuffer === 'string') {
-        loader.load(urlOrBuffer, onLoadSuccess, onLoadProgress, onLoadError);
+        loader.load(urlOrBuffer, onLoadSuccess, undefined, onLoadError);
     } else {
         loader.parse(urlOrBuffer, '', onLoadSuccess, onLoadError);
     }

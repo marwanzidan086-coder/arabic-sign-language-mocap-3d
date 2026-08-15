@@ -91,38 +91,28 @@ const ROOM_WIDTH = 14.0;
 const ROOM_DEPTH = 14.0;
 const ROOM_HEIGHT = 5.2;
 
-// --- 1. Clean Open Infinite Studio Environment (الافتراضي - بدون جدران أو عوائق) ---
+// --- 1. Clean Open Infinite Studio Environment (الاستوديو الافتراضي الأصلي كما في الصورة) ---
 function createCleanStudio() {
     const group = new THREE.Group();
     group.name = 'CleanStudioRoom';
 
-    // White Tiled Floor with Sharp Black Grid Lines
-    const tileCanvas = document.createElement('canvas');
-    tileCanvas.width = 512;
-    tileCanvas.height = 512;
-    const tileCtx = tileCanvas.getContext('2d');
-    tileCtx.fillStyle = '#ffffff';
-    tileCtx.fillRect(0, 0, 512, 512);
-    tileCtx.strokeStyle = '#000000';
-    tileCtx.lineWidth = 12;
-    tileCtx.strokeRect(0, 0, 512, 512);
-
-    const tileTexture = new THREE.CanvasTexture(tileCanvas);
-    tileTexture.wrapS = THREE.RepeatWrapping;
-    tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(16, 16);
-
+    // Pure White Floor Plane (مطابق تماماً للشكل الأصلي في الصورة)
+    const floorGeo = new THREE.PlaneGeometry(40, 40);
     const floorMat = new THREE.MeshStandardMaterial({
-        map: tileTexture,
-        roughness: 0.22,
-        metalness: 0.01,
-        color: 0xffffff
+        color: 0xffffff,
+        roughness: 0.25,
+        metalness: 0.02
     });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(ROOM_WIDTH * 1.5, ROOM_DEPTH * 1.5), floorMat);
+    const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0.001, 0);
+    floor.position.set(0, 0, 0);
     floor.receiveShadow = true;
     group.add(floor);
+
+    // Large Crisp Black/Slate Perspective Grid Lines (مطابقة لشبكة الصورة)
+    const grid = new THREE.GridHelper(30, 16, 0x000000, 0x334155);
+    grid.position.set(0, 0.002, 0);
+    group.add(grid);
 
     return group;
 }
@@ -696,23 +686,23 @@ export function setRoomEnvironment(roomName) {
             newRoom = createCleanStudio();
             if (state.ambientLight) {
                 state.ambientLight.color.set(0xffffff);
-                state.ambientLight.intensity = 2.4;
+                state.ambientLight.intensity = 1.6;
             }
             if (state.mainLight) {
                 state.mainLight.color.set(0xffffff);
-                state.mainLight.intensity = 2.2;
+                state.mainLight.intensity = 2.0;
             }
             if (state.fillLight) {
-                state.fillLight.color.set(0xffffff);
-                state.fillLight.intensity = 1.5;
+                state.fillLight.color.set(0xe0f2fe);
+                state.fillLight.intensity = 1.0;
             }
             if (state.backLight) {
                 state.backLight.color.set(0xffffff);
-                state.backLight.intensity = 1.2;
+                state.backLight.intensity = 0.8;
             }
             if (state.renderer) state.renderer.setClearColor(0xffffff, 1.0);
             if (state.floorPlane) state.floorPlane.material.opacity = 0.18;
-            if (state.floorGrid) state.floorGrid.visible = true;
+            if (state.floorGrid) state.floorGrid.visible = false;
             document.body.style.background = '#ffffff';
             break;
     }

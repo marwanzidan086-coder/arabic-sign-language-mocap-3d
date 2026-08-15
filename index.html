@@ -11,8 +11,8 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css?v=2.5">
-    <link rel="stylesheet" href="trainer.css?v=2.5">
+    <link rel="stylesheet" href="style.css?v=3.0">
+    <link rel="stylesheet" href="trainer.css?v=3.0">
     
     <!-- Unicode-to-SJIS Encoder for VMD exporter -->
     <script src="encoding.min.js"></script>
@@ -246,26 +246,25 @@
                     </button>
                 </div>
 
-                <!-- 3D Model Beautiful Loading Overlay -->
+                <!-- 3D Model Beautiful Clean Loading Overlay -->
                 <div id="model-loading-screen" class="model-loading-overlay">
                     <div class="model-loading-card">
                         <div class="loader-avatar-hologram">
                             <div class="hologram-ring outer"></div>
                             <div class="hologram-ring inner"></div>
                             <div class="hologram-core">
-                                <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i>
+                                <i class="fa-solid fa-person-running"></i>
                             </div>
                         </div>
                         <div class="loader-text-group">
-                            <h3 class="loader-title font-arabic">جاري تجهيز وتحميل الشخصية 3D</h3>
-                            <p class="loader-subtitle">Loading Rigged VRM Avatar & Kinematics Engine</p>
+                            <h3 class="loader-title font-arabic">جاري تحميل الموديل 3D</h3>
+                            <p class="loader-subtitle">Loading 3D VRM Avatar & Kinematics Engine</p>
                         </div>
                         <div class="loader-progress-track">
-                            <div id="model-load-progress-bar" class="loader-progress-fill" style="width: 25%;"></div>
+                            <div class="loader-progress-indeterminate"></div>
                         </div>
-                        <div class="loader-status-row font-arabic">
-                            <span id="model-load-step-text" class="step-text"><i class="fa-solid fa-circle-notch fa-spin"></i> جاري تنزيل ملف المجسم...</span>
-                            <span id="model-load-percent" class="percent-text font-latin">25%</span>
+                        <div class="loader-status-row font-arabic" style="justify-content: center;">
+                            <span class="step-text"><i class="fa-solid fa-circle-notch fa-spin"></i> جاري تجهيز وإعداد الشخصية...</span>
                         </div>
                     </div>
                 </div>
@@ -772,6 +771,6 @@
     </div>
 
     <!-- Main JavaScript Logic (ES Module) -->
-    <script type="module" src="app.js?v=2.5"></script>
+    <script type="module" src="app.js?v=3.0"></script>
 </body>
 </html>
