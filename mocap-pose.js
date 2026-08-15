@@ -139,11 +139,11 @@ export function alignBone(bone, startJoint, endJoint, baseDir, smoothingResponse
         const side = bone.name.startsWith('Left') ? 'Left' : 'Right';
         if (side === 'Left') {
             if (dir.y < -0.2) {
-                dir.x = Math.min(dir.x, -0.15); // force outward
+                dir.x = Math.max(dir.x, 0.15); // force outward for Left (+X)
             }
         } else {
             if (dir.y < -0.2) {
-                dir.x = Math.max(dir.x, 0.15); // force outward
+                dir.x = Math.min(dir.x, -0.15); // force outward for Right (-X)
             }
         }
         dir.normalize();

@@ -4,10 +4,10 @@ import { MOCAP_FALLBACK_RESPONSE, MOCAP_HAND_RELAX_RESPONSE } from './mocap-core
 import { getFrameSmoothing } from './mocap-filters.js';
 
 export const IDLE_ARM_DIRECTIONS = {
-    LeftArm: new THREE.Vector3(-0.20, -0.96, -0.05).normalize(),
-    LeftForeArm: new THREE.Vector3(-0.20, -0.96, 0.10).normalize(),
-    RightArm: new THREE.Vector3(0.20, -0.96, -0.05).normalize(),
-    RightForeArm: new THREE.Vector3(0.20, -0.96, 0.10).normalize()
+    LeftArm: new THREE.Vector3(0.20, -0.96, -0.05).normalize(),
+    LeftForeArm: new THREE.Vector3(0.20, -0.96, 0.10).normalize(),
+    RightArm: new THREE.Vector3(-0.20, -0.96, -0.05).normalize(),
+    RightForeArm: new THREE.Vector3(-0.20, -0.96, 0.10).normalize()
 };
 
 export const HAND_BONE_SUFFIXES = [

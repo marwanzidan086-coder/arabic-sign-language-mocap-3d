@@ -35,7 +35,7 @@ export function setFingerCurls(side, { thumb = 0, index = 0, middle = 0, ring = 
   });
 }
 
-// 5 Dedicated Master Motion Curves for Standard Arabic Signs
+// 5 Dedicated Master Motion Curves for Standard Arabic Signs (Anatomically Calibrated for VRM -X Right / +X Left)
 export const PRETRAINED_SIGN_MOTIONS = {
   'مرحبا': {
     duration: 2200,
@@ -59,17 +59,17 @@ export const PRETRAINED_SIGN_MOTIONS = {
         lift = 1.0 - t * t * (3 - 2 * t);
       }
 
-      // Upper arm direction
+      // Upper arm moves to right side (-X) and lifts up
       const baseArmDir = IDLE_ARM_DIRECTIONS.RightArm;
-      const targetArmDir = new THREE.Vector3(0.35, -0.10, 0.30).normalize();
+      const targetArmDir = new THREE.Vector3(-0.35, -0.05, 0.30).normalize();
       const currentArmDir = new THREE.Vector3().lerpVectors(baseArmDir, targetArmDir, lift).normalize();
-      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(-1, 0, 0));
 
-      // Forearm direction: upright with lateral wave
+      // Forearm points upright with natural lateral wave
       const baseForeDir = IDLE_ARM_DIRECTIONS.RightForeArm;
-      const targetForeDir = new THREE.Vector3(0.10 + wave * 0.25, 0.90, 0.15).normalize();
+      const targetForeDir = new THREE.Vector3(-0.08 + wave * 0.25, 0.90, 0.15).normalize();
       const currentForeDir = new THREE.Vector3().lerpVectors(baseForeDir, targetForeDir, lift).normalize();
-      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(-1, 0, 0));
 
       // Open hand waving
       setFingerCurls('Right', { thumb: 0.05, index: 0.05, middle: 0.05, ring: 0.08, pinky: 0.1 });
@@ -101,14 +101,14 @@ export const PRETRAINED_SIGN_MOTIONS = {
 
       // Hand moves from chin forward
       const baseArmDir = IDLE_ARM_DIRECTIONS.RightArm;
-      const targetArmDir = new THREE.Vector3(0.18, 0.05 - sweep * 0.25, 0.35 + sweep * 0.30).normalize();
+      const targetArmDir = new THREE.Vector3(-0.15, 0.05 - sweep * 0.25, 0.35 + sweep * 0.30).normalize();
       const currentArmDir = new THREE.Vector3().lerpVectors(baseArmDir, targetArmDir, lift).normalize();
-      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(-1, 0, 0));
 
       const baseForeDir = IDLE_ARM_DIRECTIONS.RightForeArm;
-      const targetForeDir = new THREE.Vector3(0.05, 0.65 - sweep * 0.45, 0.35 + sweep * 0.50).normalize();
+      const targetForeDir = new THREE.Vector3(-0.05, 0.65 - sweep * 0.45, 0.35 + sweep * 0.50).normalize();
       const currentForeDir = new THREE.Vector3().lerpVectors(baseForeDir, targetForeDir, lift).normalize();
-      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(-1, 0, 0));
 
       // Flat respectful hand
       setFingerCurls('Right', { thumb: 0.1, index: 0.05, middle: 0.05, ring: 0.05, pinky: 0.05 });
@@ -138,14 +138,14 @@ export const PRETRAINED_SIGN_MOTIONS = {
       }
 
       const baseArmDir = IDLE_ARM_DIRECTIONS.RightArm;
-      const targetArmDir = new THREE.Vector3(0.20, -0.25, 0.40).normalize();
+      const targetArmDir = new THREE.Vector3(-0.18, -0.20, 0.40).normalize();
       const currentArmDir = new THREE.Vector3().lerpVectors(baseArmDir, targetArmDir, lift).normalize();
-      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(-1, 0, 0));
 
       const baseForeDir = IDLE_ARM_DIRECTIONS.RightForeArm;
-      const targetForeDir = new THREE.Vector3(0.05, 0.45 + nod * 0.20, 0.70).normalize();
+      const targetForeDir = new THREE.Vector3(-0.05, 0.45 + nod * 0.20, 0.70).normalize();
       const currentForeDir = new THREE.Vector3().lerpVectors(baseForeDir, targetForeDir, lift).normalize();
-      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(-1, 0, 0));
 
       // Solid Thumbs-Up: Thumb UP (0), others curled (1)
       const fingerCurlVal = 0.95 * lift;
@@ -182,14 +182,14 @@ export const PRETRAINED_SIGN_MOTIONS = {
       }
 
       const baseArmDir = IDLE_ARM_DIRECTIONS.RightArm;
-      const targetArmDir = new THREE.Vector3(0.22, -0.15, 0.38).normalize();
+      const targetArmDir = new THREE.Vector3(-0.20, -0.10, 0.38).normalize();
       const currentArmDir = new THREE.Vector3().lerpVectors(baseArmDir, targetArmDir, lift).normalize();
-      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rArm, currentArmDir, new THREE.Vector3(-1, 0, 0));
 
       const baseForeDir = IDLE_ARM_DIRECTIONS.RightForeArm;
-      const targetForeDir = new THREE.Vector3(0.05 + sway, 0.75, 0.40).normalize();
+      const targetForeDir = new THREE.Vector3(-0.05 + sway, 0.75, 0.40).normalize();
       const currentForeDir = new THREE.Vector3().lerpVectors(baseForeDir, targetForeDir, lift).normalize();
-      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rForeArm, currentForeDir, new THREE.Vector3(-1, 0, 0));
 
       // ILY Sign: Thumb = 0, Index = 0, Pinky = 0, Middle = 0.95, Ring = 0.95
       const foldVal = 0.95 * lift;
@@ -229,27 +229,27 @@ export const PRETRAINED_SIGN_MOTIONS = {
         spread = 1.0 - t;
       }
 
-      // Right Arm
+      // Right Arm (Moves outward to -X)
       const baseArmR = IDLE_ARM_DIRECTIONS.RightArm;
-      const targetArmR = new THREE.Vector3(0.20 + spread * 0.45, -0.05, 0.35 + spread * 0.15).normalize();
+      const targetArmR = new THREE.Vector3(-0.15 - spread * 0.45, -0.05, 0.35 + spread * 0.15).normalize();
       const currentArmR = new THREE.Vector3().lerpVectors(baseArmR, targetArmR, lift).normalize();
-      alignBoneInstant(rArm, currentArmR, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rArm, currentArmR, new THREE.Vector3(-1, 0, 0));
 
       const baseForeR = IDLE_ARM_DIRECTIONS.RightForeArm;
-      const targetForeR = new THREE.Vector3(0.10 + spread * 0.40, 0.55, 0.45).normalize();
+      const targetForeR = new THREE.Vector3(-0.08 - spread * 0.40, 0.55, 0.45).normalize();
       const currentForeR = new THREE.Vector3().lerpVectors(baseForeR, targetForeR, lift).normalize();
-      alignBoneInstant(rForeArm, currentForeR, new THREE.Vector3(1, 0, 0));
+      alignBoneInstant(rForeArm, currentForeR, new THREE.Vector3(-1, 0, 0));
 
-      // Left Arm
+      // Left Arm (Moves outward to +X)
       const baseArmL = IDLE_ARM_DIRECTIONS.LeftArm;
-      const targetArmL = new THREE.Vector3(-0.20 - spread * 0.45, -0.05, 0.35 + spread * 0.15).normalize();
+      const targetArmL = new THREE.Vector3(0.15 + spread * 0.45, -0.05, 0.35 + spread * 0.15).normalize();
       const currentArmL = new THREE.Vector3().lerpVectors(baseArmL, targetArmL, lift).normalize();
-      alignBoneInstant(lArm, currentArmL, new THREE.Vector3(-1, 0, 0));
+      alignBoneInstant(lArm, currentArmL, new THREE.Vector3(1, 0, 0));
 
       const baseForeL = IDLE_ARM_DIRECTIONS.LeftForeArm;
-      const targetForeL = new THREE.Vector3(-0.10 - spread * 0.40, 0.55, 0.45).normalize();
+      const targetForeL = new THREE.Vector3(0.08 + spread * 0.40, 0.55, 0.45).normalize();
       const currentForeL = new THREE.Vector3().lerpVectors(baseForeL, targetForeL, lift).normalize();
-      alignBoneInstant(lForeArm, currentForeL, new THREE.Vector3(-1, 0, 0));
+      alignBoneInstant(lForeArm, currentForeL, new THREE.Vector3(1, 0, 0));
 
       // Open hands
       setFingerCurls('Right', { thumb: 0.05, index: 0.05, middle: 0.05, ring: 0.05, pinky: 0.05 });

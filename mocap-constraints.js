@@ -12,15 +12,15 @@ export function clampUpperArmDirection(dir, side) {
     // منع اليد من الدخول داخل الصدر والبطن (Inward Penetration Barrier)
     if (side === 'Left') {
         if (dir.y < -0.1) {
-            dir.x = Math.min(dir.x, -0.20); // حجز مسافة أمان خارج الجسم لليد اليسرى
+            dir.x = Math.max(dir.x, 0.15); // حجز مسافة أمان خارج الجسم لليد اليسرى (+X)
         } else {
-            dir.x = Math.min(dir.x, -0.05);
+            dir.x = Math.max(dir.x, 0.05);
         }
     } else {
         if (dir.y < -0.1) {
-            dir.x = Math.max(dir.x, 0.20); // حجز مسافة أمان خارج الجسم لليد اليمنى
+            dir.x = Math.min(dir.x, -0.15); // حجز مسافة أمان خارج الجسم لليد اليمنى (-X)
         } else {
-            dir.x = Math.max(dir.x, 0.05);
+            dir.x = Math.min(dir.x, -0.05);
         }
     }
     dir.normalize();
