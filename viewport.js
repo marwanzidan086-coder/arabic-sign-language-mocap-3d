@@ -96,7 +96,7 @@ function createCleanStudio() {
     const group = new THREE.Group();
     group.name = 'CleanStudioRoom';
 
-    // Pure White Tiled Floor with Balanced Jet Black Grid Lines
+    // Pure White Tiled Floor with Crisp Jet Black Grid Lines
     const tileCanvas = document.createElement('canvas');
     tileCanvas.width = 512;
     tileCanvas.height = 512;
@@ -106,20 +106,22 @@ function createCleanStudio() {
     tileCtx.fillStyle = '#ffffff';
     tileCtx.fillRect(0, 0, 512, 512);
     
-    // Solid Jet Black Balanced Border Lines
+    // Solid Pitch Black Border Lines (خطوط سوداء حالكة ونقية 100% بدون أي بهتان)
     tileCtx.strokeStyle = '#000000';
-    tileCtx.lineWidth = 5;
+    tileCtx.lineWidth = 10;
     tileCtx.strokeRect(0, 0, 512, 512);
 
     const tileTexture = new THREE.CanvasTexture(tileCanvas);
     tileTexture.wrapS = THREE.RepeatWrapping;
     tileTexture.wrapT = THREE.RepeatWrapping;
-    tileTexture.repeat.set(20, 20); // تصغير المربعات قليلاً كما طُلب
+    tileTexture.repeat.set(20, 20);
+    tileTexture.anisotropy = 16; // أقصى حدة ونقاء للخطوط من كل زوايا الكاميرا
+    tileTexture.needsUpdate = true;
 
     const floorGeo = new THREE.PlaneGeometry(14, 14);
     const floorMat = new THREE.MeshStandardMaterial({
         map: tileTexture,
-        roughness: 0.25,
+        roughness: 0.9, // مطفي لمنع ارتداد الإضاءة الساطعة التي تحول السواد إلى رمادي
         metalness: 0.0,
         color: 0xffffff
     });
