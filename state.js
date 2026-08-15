@@ -14,6 +14,8 @@ export const state = {
     floorPlane: null,
     whiteTilesFloor: null,
     studioRoom: null,
+    currentRoom: 'studio',
+    roomEnvironmentGroup: null,
     skeletonHelper: null,
     jointHelpersGroup: null, // Contains interactive joint spheres
     mappedAvatarBones: {},
@@ -197,10 +199,21 @@ export const el = {
     mocapRecordingPanel: document.getElementById('mocap-recording-panel'),
     recTimer: document.getElementById('rec-timer'),
     btnRecordStart: document.getElementById('btn-record-start'),
+    currentRoom: 'studio',
+    roomEnvironmentGroup: null,
+
     btnRecordPause: document.getElementById('btn-record-pause'),
     btnRecordStop: document.getElementById('btn-record-stop'),
     setEnableFace: document.getElementById('set-enable-face'),
-    setEnableEyeLook: document.getElementById('set-enable-eye-look')
+    setEnableEyeLook: document.getElementById('set-enable-eye-look'),
+
+    // Model Loading Screen & Room Switcher
+    modelLoadingScreen: document.getElementById('model-loading-screen'),
+    modelLoadProgressBar: document.getElementById('model-load-progress-bar'),
+    modelLoadStepText: document.getElementById('model-load-step-text'),
+    modelLoadPercent: document.getElementById('model-load-percent'),
+    roomSwitcherBar: document.getElementById('room-switcher-bar'),
+    roomBtns: document.querySelectorAll('.room-btn')
 };
 
 // --- Dragging Helper for floating panels ---

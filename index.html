@@ -222,6 +222,50 @@
                     </div>
                 </div>
                 
+                <!-- Top Center: 4 Room Environment Switcher HUD -->
+                <div id="room-switcher-bar" class="room-switcher-bar font-arabic">
+                    <button class="room-btn active" data-room="studio" title="استوديو أبيض فاخر (White Studio)">
+                        <i class="fa-solid fa-cube"></i>
+                        <span class="room-btn-text">استوديو فاخر</span>
+                    </button>
+                    <button class="room-btn" data-room="classroom" title="قاعة تدريب وفصل (Classroom)">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                        <span class="room-btn-text">قاعة تدريب</span>
+                    </button>
+                    <button class="room-btn" data-room="cyber" title="مختبر سايبر نيون (Cyber Neon Lab)">
+                        <i class="fa-solid fa-vr-cardboard"></i>
+                        <span class="room-btn-text">سايبر نيون</span>
+                    </button>
+                    <button class="room-btn" data-room="sunset" title="مسرح الغروب الذهبي (Sunset Stage)">
+                        <i class="fa-solid fa-masks-theater"></i>
+                        <span class="room-btn-text">مسرح الغروب</span>
+                    </button>
+                </div>
+
+                <!-- 3D Model Beautiful Loading Overlay -->
+                <div id="model-loading-screen" class="model-loading-overlay">
+                    <div class="model-loading-card">
+                        <div class="loader-avatar-hologram">
+                            <div class="hologram-ring outer"></div>
+                            <div class="hologram-ring inner"></div>
+                            <div class="hologram-core">
+                                <i class="fa-solid fa-person-walking-dashed-line-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="loader-text-group">
+                            <h3 class="loader-title font-arabic">جاري تجهيز وتحميل الشخصية 3D</h3>
+                            <p class="loader-subtitle">Loading Rigged VRM Avatar & Kinematics Engine</p>
+                        </div>
+                        <div class="loader-progress-track">
+                            <div id="model-load-progress-bar" class="loader-progress-fill" style="width: 25%;"></div>
+                        </div>
+                        <div class="loader-status-row font-arabic">
+                            <span id="model-load-step-text" class="step-text"><i class="fa-solid fa-circle-notch fa-spin"></i> جاري تنزيل ملف المجسم...</span>
+                            <span id="model-load-percent" class="percent-text font-latin">25%</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Drag & Drop overlay -->
                 <div id="drop-overlay" class="drop-overlay">
                     <div class="drop-content">

@@ -10,7 +10,8 @@ import {
     syncVisualHelpersMode,
     triggerViewportResize,
     updateThemeBackground,
-    updateGizmoModeUI
+    updateGizmoModeUI,
+    setRoomEnvironment
 } from './viewport.js';
 import {
     applyIdlePose,
@@ -173,6 +174,13 @@ export function toggleDevMode(forceState) {
 
 // --- Load Model ---
 export function loadModel(urlOrBuffer) {
+    if (el.modelLoadingScreen) {
+        el.modelLoadingScreen.classList.remove('fade-out');
+        if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '20%';
+        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> جاري تنزيل ملف المجسم ثلاثي الأبعاد...';
+        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '20%';
+    }
+
     el.modelName.innerText = "Loading Model...";
     el.modelJoints.innerText = "0 Joints";
     el.modelVertices.innerText = "0 Vertices";
@@ -212,8 +220,20 @@ export function loadModel(urlOrBuffer) {
 
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
+
+    const onLoadProgress = (xhr) => {
+        if (xhr.lengthComputable && xhr.total > 0) {
+            const percent = Math.min(85, Math.round((xhr.loaded / xhr.total) * 75) + 15);
+            if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = `${percent}%`;
+            if (el.modelLoadPercent) el.modelLoadPercent.innerText = `${percent}%`;
+        }
+    };
     
     const onLoadSuccess = (gltf) => {
+        if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '90%';
+        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-person-running fa-fade"></i> تهيئة الهيكل العظمي والمفاصل الحركية...';
+        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '90%';
+
         const vrm = gltf.userData.vrm;
         if (vrm) {
             state.vrm = vrm;
@@ -237,10 +257,12 @@ export function loadModel(urlOrBuffer) {
                 if (child.material) {
                     const materials = Array.isArray(child.material) ? child.material : [child.material];
                     materials.forEach(mat => {
-                        mat.transparent = true;
+                        mat.transparent = state.meshOpacity < 0.999;
                         mat.opacity = state.meshOpacity;
                         mat.wireframe = state.wireframe;
-                        mat.side = THREE.DoubleSide;
+                        mat.depthWrite = true;
+                        mat.depthTest = true;
+                        mat.side = THREE.FrontSide;
                     });
                 }
             }
@@ -407,16 +429,33 @@ export function loadModel(urlOrBuffer) {
         el.modelVertices.innerText = `${(vertexCount / 1000).toFixed(1)}k Verts`;
 
         updateMeshVisibility();
+
+        if (el.modelLoadProgressBar) el.modelLoadProgressBar.style.width = '100%';
+        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-circle-check" style="color: #00ffcc;"></i> اكتمل تجهيز الشخصية 3D بنجاح!';
+        if (el.modelLoadPercent) el.modelLoadPercent.innerText = '100%';
+
+        setTimeout(() => {
+            if (el.modelLoadingScreen) {
+                el.modelLoadingScreen.classList.add('fade-out');
+            }
+        }, 600);
     };
 
     const onLoadError = (error) => {
         console.error("Error loading model:", error);
         el.modelName.innerText = "Error Loading File";
         el.boneTree.innerHTML = '<div class="tree-loading" style="color: #ff4d4d;"><i class="fa-solid fa-circle-xmark"></i> Failed to parse model. Check console.</div>';
+        
+        if (el.modelLoadStepText) el.modelLoadStepText.innerHTML = '<i class="fa-solid fa-triangle-exclamation" style="color: #f43f5e;"></i> فشل تنزيل ملف المجسم!';
+        setTimeout(() => {
+            if (el.modelLoadingScreen) {
+                el.modelLoadingScreen.classList.add('fade-out');
+            }
+        }, 1200);
     };
 
     if (typeof urlOrBuffer === 'string') {
-        loader.load(urlOrBuffer, onLoadSuccess, undefined, onLoadError);
+        loader.load(urlOrBuffer, onLoadSuccess, onLoadProgress, onLoadError);
     } else {
         loader.parse(urlOrBuffer, '', onLoadSuccess, onLoadError);
     }
@@ -1405,4 +1444,14 @@ export function setupEventListeners() {
             startPoseCaptureCountdown();
         });
     }
+
+    // --- Room Environment Switcher Buttons ---
+    document.querySelectorAll('.room-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const roomName = btn.dataset.room;
+            if (roomName) {
+                setRoomEnvironment(roomName);
+            }
+        });
+    });
 }
