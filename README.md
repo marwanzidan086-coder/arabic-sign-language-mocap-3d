@@ -1,18 +1,17 @@
 <div align="center">
 
 # 🤟 Arabic Sign Language Recognition & 3D MoCap AI System
-### 🤖 نظام الذكاء الاصطناعي لالتقاط الحركة ثلاثي الأبعاد والتعرف على لغة الإشارة العربية
 
 <br/>
 
-<img src=".github/assets/hero_banner.jpg" alt="Arabic Sign Language & 3D MoCap Hero Banner" width="100%" style="border-radius: 14px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1);" />
+<img src=".github/assets/01_clean_3d_studio.png" alt="Arabic Sign Language & 3D MoCap Hero Banner" width="100%" style="border-radius: 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45); border: 1px solid rgba(255, 255, 255, 0.1);" />
 
 <br/><br/>
 
 [![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-arabic--sign--mocap--3d.vercel.app-00f2fe?style=for-the-badge&logo=vercel&logoColor=white)](https://arabic-sign-mocap-3d.vercel.app)
 [![GitHub Stars](https://img.shields.io/github/stars/marwanzidan086-coder/arabic-sign-language-mocap-3d?style=for-the-badge&logo=github&color=facc15)](https://github.com/marwanzidan086-coder/arabic-sign-language-mocap-3d/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-38bdf8?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Three.js](https://img.shields.io/badge/Three.js-r128-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-r160-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![Google MediaPipe](https://img.shields.io/badge/Google-MediaPipe_Vision-00897B?style=for-the-badge&logo=google&logoColor=white)](https://developers.google.com/mediapipe)
 [![Firebase Firestore](https://img.shields.io/badge/Firebase-Cloud_Firestore-FFA611?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
 [![WebGL 60FPS](https://img.shields.io/badge/Performance-60_FPS_WebGL-10b981?style=for-the-badge&logo=webgl&logoColor=white)](#)
@@ -20,12 +19,11 @@
 
 <br/>
 
-**A Next-Generation Web Platform connecting AI Computer Vision, 3D Kinematics, and Arabic Sign Language Communication**  
-*منصة ويب فائقة التطور تجمع بين الرؤية الحاسوبية بالذكاء الاصطناعي، والرسوميات ثلاثية الأبعاد، والتقاط الحركة للغة الإشارة العربية في الوقت الفعلي.*
+**A Next-Generation AI Motion Capture & Arabic Sign Language Recognition Platform connecting Computer Vision, 3D Kinematics, and Cloud Synchronization.**
 
 <br/>
 
-[🚀 التجربة المباشرة (Live Demo)](#-تجربة-المشروع-المباشرة-live-demo) • [✨ المميزات الرئيسية](#-المميزات-الرئيسية-key-features) • [🎓 مدرب الإشارات](#-مدرب-الإشارات-المخصص-gesture-trainer--inspector) • [🛠️ البنية التقنية](#-البنية-البرمجية-والتقنيات-architecture--tech-stack) • [⚡ التشغيل المحلي](#-التشغيل-والتثبيت-المحلي-quick-start) • [📁 هيكل الملفات](#-هيكل-المشروع-project-structure) • [🤝 المساهمة](#-المساهمة-والتطوير-contributing)
+[🚀 Live Demo](#-live-demo) • [✨ Key Features](#-key-features) • [📸 Visual Showcase](#-visual-showcase) • [🛠️ Architecture](#-system-architecture) • [🎓 Gesture Trainer](#-custom-gesture-trainer--recognition-engine) • [⚡ Quick Start](#-quick-start--local-setup) • [📁 Project Structure](#-project-structure) • [🤝 Contributing](#-contributing)
 
 ---
 
@@ -33,9 +31,9 @@
 
 <br/>
 
-## 🌐 تجربة المشروع المباشرة (Live Demo)
+## 🌐 Live Demo
 
-يمكنك تجربة النظام بالكامل مباشرة الآن من أي متصفح ويب على الحاسوب أو الهاتف الذكي دون الحاجة لتثبيت أي برامج:  
+Experience the full AI system directly in your modern desktop or mobile browser with zero installation:
 
 <div align="center">
 
@@ -44,47 +42,51 @@
 </div>
 
 > [!TIP]
-> **أداء فائق بالكامل داخل المتصفح (In-Browser 60 FPS):**  
-> يعمل النظام بالكامل على عتاد العميل (Client-Side) باستخدام تقنيات `WebGL` و `Web Workers` و `SIMD-accelerated MediaPipe` دون إرسال الفيديو لأي خادم خارجي، مما يضمن أقصى درجات الخصوصية والسرعة اللحظية.
+> **100% In-Browser Hardware Acceleration (60 FPS):**  
+> All computer vision, pose estimation, and 3D kinematics run entirely on the client side using `WebGL 2.0`, `Web Workers`, and `SIMD-accelerated MediaPipe Tasks`. Camera frames never leave your local device, guaranteeing zero latency and 100% user privacy.
 
 ---
 
-## ✨ المميزات الرئيسية (Key Features)
+## ✨ Key Features
 
 <table>
   <tr>
     <td width="50%">
-      <h3>🎓 1. مدرب ومفتش الإشارات (Gesture Trainer)</h3>
+      <h3>🤖 1. Real-Time 3D MoCap & VRM Avatar</h3>
       <ul>
-        <li><b>تسجيل عينات حركية:</b> تسجيل إشارات مخصصة من كاميرا الويب أو ملف فيديو لمدة 3 ثوانٍ بدقة متناهية.</li>
-        <li><b>خوارزميات تصنيف ذكية:</b> مقارنة ديناميكية للمسافات والزوايا بين مفاصل الأصابع واليدين (KNN & Cosine Distance Matching).</li>
-        <li><b>مشغل حركي 3D:</b> مراجعة وتشغيل حركة الهيكل العظمي المسجل إطاراً بإطار للتأكد من دقة الإشارة.</li>
+        <li><b>VRM 3D Avatar Support:</b> Real-time skeletal retargeting onto standard humanoid <code>.vrm</code> / <code>.glb</code> models.</li>
+        <li><b>Holistic Body & Face Tracking:</b> Tracks head orientation, eye gaze, facial expressions (BlendShapes), and full body posture.</li>
+        <li><b>Dual-Hand Dexterity:</b> 21 3D joint landmarks per hand with wrist rotation normalization.</li>
+        <li><b>Natural Idle Breathing:</b> Procedural breathing and idle dynamics when motion is paused.</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>🤖 2. التقاط الحركة والأفاتار 3D (3D MoCap)</h3>
+      <h3>🎓 2. Custom Gesture Trainer & Studio</h3>
       <ul>
-        <li><b>دعم مجسمات VRM:</b> استيراد وتحريك الأفاتار ثلاثي الأبعاد بصيغة <code>.vrm</code> بدقة حركية وفيزيائية فائقة.</li>
-        <li><b>تتبع شامل للوجه والجسم:</b> تتبع فوري لحركات الرأس، تعابير الوجه (BlendShapes)، واليدين والأصابع كاملة.</li>
-        <li><b>محرر العظام المباشر (Bone Inspector):</b> ضبط وتدوير ومعاينة زوايا العظام مع أدوات Transform Gizmos.</li>
+        <li><b>3-Second Motion Stream Capture:</b> High-speed keyframe sequence sampling (30–60 FPS) with automated noise elimination.</li>
+        <li><b>Geometric Vector Classification:</b> Dynamic finger distance matrices & Cosine similarity matching algorithms.</li>
+        <li><b>3D Keyframe Playback Modal:</b> Frame-by-frame timeline scrubber to inspect recorded joint trajectories before saving.</li>
+        <li><b>Firebase Cloud Sync:</b> Instant global synchronization of newly trained signs to Google Cloud Firestore.</li>
       </ul>
     </td>
   </tr>
   <tr>
     <td width="50%">
-      <h3>💬 3. مترجم الإشارة إلى نص فوري (Sign-to-Text)</h3>
+      <h3>💬 3. Continuous Sign-to-Text Translator</h3>
       <ul>
-        <li><b>ترجمة فورية مستمرة:</b> تعرف فوري ومستمر على الإشارات المنجزة وتحويلها إلى كلمات وجمل عربية واضحة.</li>
-        <li><b>محرك تصفية الاهتزاز (One-Euro Filter):</b> فلترة الضوضاء وتثبيت التنبؤات للحصول على مخرجات دقيقة بدون وميض.</li>
-        <li><b>أدوات إدارة النصوص:</b> نسخ النصوص المترجمة للحافظة بزر واحد وتفريغ الشاشة بسهولة.</li>
+        <li><b>Instant Translation HUD:</b> Continuous real-time detection converting dynamic sign gestures into readable Arabic text.</li>
+        <li><b>One-Euro Filter Smoothing:</b> Adaptive cutoff frequency filtering eliminating webcam jitter while preserving sharp motion response.</li>
+        <li><b>Text-to-Sign Playback:</b> Interactive modal allowing users to type trained words and watch the 3D avatar perform the sign.</li>
+        <li><b>Clipboard & Buffer Tools:</b> One-click copy, clear, and live confidence score metrics.</li>
       </ul>
     </td>
     <td width="50%">
-      <h3>☁️ 4. المزامنة السحابية (Firebase Cloud Sync)</h3>
+      <h3>🛠️ 4. Developer Console & Joint Inspector</h3>
       <ul>
-        <li><b>حفظ سحابي فوري:</b> مزامنة كل الإشارات المدربة وقواعد البيانات مباشرة مع Google Cloud Firestore.</li>
-        <li><b>تخزين هجين (IndexedDB + Cloud):</b> استمرار العمل وتخزين البيانات محلياً حتى في حال انقطاع الإنترنت.</li>
-        <li><b>استيراد وتصدير JSON:</b> تصدير واستيراد قواعد بيانات الإشارات بضغطة زر لمشاركتها وتداولها.</li>
+        <li><b>Interactive Bone Hierarchy Tree:</b> Full outliner tree of all 48 humanoid joints with live search filtering.</li>
+        <li><b>Transform Gizmos & Sliders:</b> Precise manual control over Euler rotations, translation offsets, and bone scaling.</li>
+        <li><b>Custom Pose & VMD Exporter:</b> Export captured poses as formatted JSON datasets or MikuMikuDance (VMD) motion files.</li>
+        <li><b>Studio Viewport Settings:</b> Control mesh wireframe, joint sphere radiuses, X-Ray mode, and lighting environments.</li>
       </ul>
     </td>
   </tr>
@@ -92,191 +94,224 @@
 
 ---
 
-## 🎓 مدرب الإشارات المخصص (Gesture Trainer & Inspector)
+## 📸 Visual Showcase
 
 <div align="center">
-  <img src=".github/assets/gesture_trainer_mockup.jpg" alt="Gesture Trainer and Hand Tracking Dashboard Mockup" width="100%" style="border-radius: 14px; box-shadow: 0 12px 35px rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08);" />
+
+### 1. Modern 3D Studio & Clean Minimalist Mode
+*Radiant milk-white studio room featuring architectural Boiseries wall mouldings and high-contrast perspective floor grid.*
+<img src=".github/assets/01_clean_3d_studio.png" alt="3D Studio and Avatar Clean Mode" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
+### 2. Developer Console & Skeletal Joint Outliner
+*Full joint hierarchy inspection with real-time Euler rotation sliders, space toggles, and hotkey Transform Gizmos.*
+<img src=".github/assets/02_developer_inspector.png" alt="Developer Console and Bone Inspector" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
+### 3. Viewport & Skeleton Display Settings
+*Customizable joint spheres, X-Ray bone overlays, mesh wireframe mode, and ambient studio light controls.*
+<img src=".github/assets/03_viewport_settings.png" alt="Viewport Settings and Visualizers" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
+### 4. Custom Gesture Trainer & Metric HUD
+*Interactive sign recording dashboard showing live hand tracking quality, proximity distances, and Firebase Cloud database sync.*
+<img src=".github/assets/04_gesture_trainer.png" alt="Gesture Trainer Dashboard" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
+### 5. Real-Time Arabic Sign-to-Text Translator
+*Continuous sign language recognition HUD displaying live prediction confidence and accumulated translated text.*
+<img src=".github/assets/05_sign_to_text_translator.png" alt="Sign to Text Live Translator" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
+### 6. Interactive Text-to-Sign Avatar Playback
+*Input any trained Arabic word or phrase to trigger smooth 3D avatar animation playback.*
+<img src=".github/assets/06_text_to_sign_modal.png" alt="Text to Sign Modal" width="100%" style="border-radius: 10px; margin-bottom: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.3);" />
+
 </div>
 
-<br/>
-
-يحتوي النظام على واجهة تدريب متقدمة تسمح للمستخدمين والمختصين بتدريب إشارات جديدة في لغة الإشارة العربية:
-1. **التسجيل الحركي (3-Second Stream Capture):** أخذ عينات متتالية بمعدل 30-60 إطاراً في الثانية لحركة اليدين والأصابع.
-2. **استخراج الخصائص الحركية (Feature Extraction):** حساب المسافات النسبية لـ 21 نقطة مفصلية لكل يد مع معادلة تدوير المعصم لمنع حساسية الموضع.
-3. **المعاينة ثلاثية الأبعاد (3D Keyframe Playback):** شريط زمني تفاعلي لمعاينة الحركة الملتقطة والتأكد من وضوحها قبل حفظها.
-4. **المزامنة مع Firebase:** تخزين النموذج المخصص سحابياً ليصبح متاحاً على الفور لجميع المستخدمين.
-
 ---
 
-## 🏛️ بيئة الاستوديو ثلاثي الأبعاد (Studio Environment)
-
-- **استوديو أبيض ناصع فاخر (Pure Milk White Studio):** إضاءة سينمائية محيطية فائقة النقاء (`AmbientLight` + `DirectionalLights`) بدون ظلال رمادية باهتة.
-- **بانوهات جدارية كلاسيكية (Architectural Boiseries):** جدار خلفي أنيق مصمم بإطارات بانوهات مزدوجة وحزام معماري لإبراز عمق الأفاتار ثلاثي الأبعاد.
-- **أرضية سيراميك بيضاء بمربعات واضحة:** أرضية مقسمة بخطوط شبكية سوداء هندسية حادة لتوضيح أبعاد المشهد ومنظور الكاميرا وحركة القدمين.
-
----
-
-## 🛠️ البنية البرمجية والتقنيات (Architecture & Tech Stack)
+## 🛠️ System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Input ["📷 Video & Sensor Stream"]
-        Cam[Webcam / Video File Stream]
+    subgraph Input ["📷 Video & Stream Ingestion"]
+        Cam[Live Webcam / Video File Stream]
     end
 
-    subgraph VisionAI ["🧠 Vision & Motion Capture Pipeline"]
-        MP[Google MediaPipe Vision Tasks]
-        Filter[One-Euro Smoothing Filter]
+    subgraph VisionAI ["🧠 Computer Vision & Tracking Pipeline"]
+        MP[Google MediaPipe Tasks Vision]
+        Filter[One-Euro Jitter Filter]
         Cam --> MP
-        MP -->|Raw Landmarks| Filter
+        MP -->|Raw 3D Landmarks| Filter
     end
 
-    subgraph CoreEngine ["⚡ Kinematics & Processing Engines"]
-        Retarget[Kinematic Retargeting Engine]
-        Classifier[Custom Sign KNN Classifier]
+    subgraph Kinematics ["⚡ Kinematics & AI Classification Engine"]
+        Retarget[Humanoid Kinematic Retargeter]
+        Classifier[Dynamic Sign Matching & KNN Engine]
         Filter -->|Smoothed Pose & Hands| Retarget
-        Filter -->|Feature Vectors| Classifier
+        Filter -->|Geometric Feature Vectors| Classifier
     end
 
-    subgraph Rendering ["🎮 3D Viewport & Rendering"]
-        ThreeJS[Three.js Engine]
-        VRMAvatar[VRM 3D Avatar + BlendShapes]
-        Studio[Milk White Studio + Boiseries]
-        Retarget -->|Bone Rotations| VRMAvatar
+    subgraph Rendering ["🎮 WebGL 3D Viewport"]
+        ThreeJS[Three.js Engine r160]
+        VRMAvatar[VRM Humanoid Avatar + BlendShapes]
+        Studio[Milk-White Studio + Boiseries Moulding]
+        Retarget -->|Joint Rotations (Quaternions)| VRMAvatar
         VRMAvatar --> ThreeJS
         Studio --> ThreeJS
     end
 
-    subgraph DataSync ["☁️ Persistence & Cloud Sync"]
-        LocalDB[(IndexedDB - idb-keyval)]
+    subgraph Persistence ["☁️ Hybrid Storage & Cloud Synchronization"]
+        LocalDB[(IndexedDB Cache - idb-keyval)]
         CloudDB[(Google Cloud Firestore)]
         Classifier <--> LocalDB
-        LocalDB <-->|Live Sync| CloudDB
+        LocalDB <-->|Real-time Sync| CloudDB
     end
 
-    subgraph UI ["🖥️ User Interface & Output"]
-        Display[Glassmorphic Control Dashboard]
-        SpeechText[Arabic Sign-to-Text Display]
+    subgraph Presentation ["🖥️ User Interface & Output HUD"]
+        Display[Glassmorphic UI Overlay]
+        TranslatorHUD[Live Sign-to-Text Output HUD]
         ThreeJS --> Display
-        Classifier -->|Recognized Sign| SpeechText
+        Classifier -->|Predicted Arabic Text & Score| TranslatorHUD
     end
 ```
 
-### جدول التقنيات (Tech Stack Matrix)
+---
 
-| الطبقة / المكون | التقنية المستخدمة | الدور والأهمية |
-| :--- | :--- | :--- |
-| **محرك الجرافيكس 3D** | [Three.js r128](https://threejs.org/) + [@pixiv/three-vrm](https://github.com/pixiv/three-vrm) | عرض البيئة ثلاثية الأبعاد، تحريك عظام الأفاتار، وضبط الإضاءة |
-| **الرؤية الحاسوبية والذكاء الاصطناعي** | [Google MediaPipe Tasks Vision](https://developers.google.com/mediapipe) | استخراج إحداثيات الوجه واليدين والوضعية بأعلى سرعة وأقل استهلاك |
-| **تنعيم الحركة والفلترة** | `One-Euro Filter Algorithm` | القضاء على الاهتزاز وتثبيت حركة الأصابع والمفاصل |
-| **قاعدة البيانات السحابية** | [Google Cloud Firestore](https://firebase.google.com/) | المزامنة اللحظية للإشارات المخصصة بين المستخدمين |
-| **التخزين المحلي** | [IndexedDB (idb-keyval)](https://github.com/jakearchibald/idb-keyval) | التخزين الدائم للبيانات على جهاز المستخدم للعمل دون إنترنت |
-| **واجهة المستخدم** | Modern Glassmorphic CSS3 + FontAwesome 6 | واجهة تفاعلية زجاجية حديثة متجاوبة مع كافة الشاشات |
-| **الاستضافة والنشر** | [Vercel](https://vercel.com/) | استضافة سريعة مع تفعيل ترويسات الأمان المتقدمة (COOP/COEP) |
+## 🎓 Custom Gesture Trainer & Recognition Engine
+
+The system features an autonomous, browser-based gesture training engine that enables anyone to train, test, and deploy new Arabic signs in seconds:
+
+1. **3-Second Stream Capture**: Samples sequential keyframes of finger joints and wrist coordinates at 30–60 FPS.
+2. **Wrist Normalization**: Converts raw pixel coordinates into wrist-relative canonical 3D space, making gesture detection invariant to camera distance or lateral positioning.
+3. **Geometric Metric Dashboard**: Computes live camera distance, body proximity, and inter-hand Euclidean separation.
+4. **Interactive 3D Playback Scrubber**: Allows users to inspect and scrub through captured joint motion frame-by-frame before saving.
+5. **Hybrid Persistence**: Saves gestures locally to `IndexedDB` and asynchronously synchronizes with `Google Cloud Firestore`.
 
 ---
 
-## ⚡ التشغيل والتثبيت المحلي (Quick Start)
+## ⌨️ Keyboard & Mouse Controls
 
-### 1. استنساخ المستودع (Clone Repository)
+| Key / Action | Mode | Description |
+| :---: | :---: | :--- |
+| <kbd>W</kbd> | **Translate Gizmo** | Activate 3D position translation handles on selected joint |
+| <kbd>E</kbd> | **Rotate Gizmo** | Activate Euler rotation rings on selected joint |
+| <kbd>R</kbd> | **Scale Gizmo** | Activate bone scale manipulation handles |
+| <kbd>Q</kbd> | **Select Mode** | Activate bone selection without gizmo handles |
+| <kbd>Tab</kbd> | **Developer Console** | Toggle between clean presentation mode and full developer inspector |
+| <kbd>Space</kbd> | **Pause / Play** | Freeze avatar motion to inspect current skeletal pose |
+| <kbd>Esc</kbd> | **Deselect** | Deselect active joint and hide transform gizmo |
+| <kbd>Left Click + Drag</kbd> | **Orbit Camera** | Rotate 3D studio camera around the avatar |
+| <kbd>Right Click + Drag</kbd>| **Pan Camera** | Pan 3D viewport position |
+| <kbd>Scroll Wheel</kbd> | **Zoom** | Zoom camera closer to hands, face, or full body |
+
+---
+
+## ⚡ Quick Start & Local Setup
+
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/marwanzidan086-coder/arabic-sign-language-mocap-3d.git
 cd arabic-sign-language-mocap-3d
 ```
 
-### 2. تشغيل خادم محلي (Run Local Web Server)
-نظراً لاستخدام تقنيات `ES Modules` و `Web Workers`، يلزم تشغيل المشروع عبر خادم ويب محلي:
+### 2. Start a Local Static Web Server
+Because the application uses modern `ES Modules` and `Web Workers`, it must be served over an HTTP/HTTPS server:
 
-**باستخدام Node.js / npx (موصى به):**
+**Using Node.js / npx (Recommended):**
 ```bash
 npx serve .
 ```
 
-**أو باستخدام Python 3:**
+**Or using Python 3:**
 ```bash
 python -m http.server 8080
 ```
 
-**أو عبر إضافة Live Server في VS Code:**
-- اضغط كليك يمين على `index.html` واختر **Open with Live Server**.
+**Or using VS Code Live Server Extension:**
+- Right-click `index.html` and select **"Open with Live Server"**.
 
-### 3. فتح التطبيق
-افتح المتصفح على العنوان:
+### 3. Open in Browser
+Navigate to:
 👉 **`http://localhost:8080`**  
-*(يرجى السماح للتطبيق بالوصول إلى الكاميرا عند طلب المتصفح)*
+*(Allow camera access when prompted by the browser for real-time motion capture)*
 
 ---
 
-## ⌨️ اختصارات لوحة المفاتيح (Keyboard Shortcuts)
+## 📦 Tech Stack & Dependencies
 
-| المفتاح | الوظيفة | الوصف |
-| :---: | :--- | :--- |
-| <kbd>W</kbd> | **وضع النقل (Translate)** | تحريك المفاصل والعظام في الفضاء ثلاثي الأبعاد |
-| <kbd>E</kbd> | **وضع التدوير (Rotate)** | تدوير زوايا المفاصل يدpropياً |
-| <kbd>R</kbd> | **وضع القياس (Scale)** | تكبير أو تصغير حجم العظام المحددة |
-| <kbd>Q</kbd> | **وضع التحديد (Select)** | تفعيل وضع التحديد وإيقاف المحاور |
-| <kbd>Space</kbd> | **إيقاف / تشغيل (Play/Pause)** | إيقاف حركة الأفاتار مؤقتاً لمعاينة وضعية محددة |
-| <kbd>Esc</kbd> | **إلغاء التحديد (Deselect)** | إلغاء تحديد المفصل المختار حالياً |
+| Layer / Component | Technology | Role & Significance |
+| :--- | :--- | :--- |
+| **3D Graphics Engine** | [Three.js r160](https://threejs.org/) + [@pixiv/three-vrm 3](https://github.com/pixiv/three-vrm) | WebGL 3D rendering, humanoid VRM avatar kinematics, and shadow mapping |
+| **Computer Vision AI** | [Google MediaPipe Tasks Vision](https://developers.google.com/mediapipe) | High-speed neural network landmark extraction for pose, face, and hands |
+| **Motion Smoothing** | `One-Euro Filter Algorithm` | Adaptive jitter suppression and velocity-based lag mitigation |
+| **Cloud Database** | [Google Cloud Firestore](https://firebase.google.com/) | Real-time cloud storage and synchronization of custom sign databases |
+| **Local Storage** | [IndexedDB (idb-keyval)](https://github.com/jakearchibald/idb-keyval) | Fast, offline-first client-side data persistence |
+| **Motion Export** | Custom VMD / JSON Exporters + `encoding.min.js` | Direct export to MMD motion formats (.vmd) with Shift-JIS encoding |
+| **Styling & UI** | Modern CSS3 Glassmorphism + FontAwesome 6 | Ultra-sleek dark theme with responsive sidebars and glowing HUD indicators |
+| **Deployment** | [Vercel](https://vercel.com/) | Fast edge deployment configured with modern security headers (`COOP`/`COEP`) |
 
 ---
 
-## 📁 هيكل المشروع (Project Structure)
+## 📁 Project Structure
 
 ```text
 arabic-sign-language-mocap-3d/
 ├── .github/
-│   ├── assets/                     # الصور والشعارات عالية الدقة للتوثيق
-│   │   ├── hero_banner.jpg         # البانر الرئيسي للمستودع
-│   │   └── gesture_trainer_mockup.jpg # موك أب واجهة المدرب الحركي
-│   ├── ISSUE_TEMPLATE/             # قوالب تقارير الأخطاء والاقتراحات
-│   └── workflows/ci.yml            # إجراءات الفحص والتحقق الآلي (CI)
-├── index.html                      # واجهة المستخدم وتخطيط مساحة العمل ثلاثية الأبعاد
-├── style.css                       # تصميم الواجهة الزجاجية التفاعلية الحديثة
-├── trainer.css                     # تصميم نافذة ومدرب الإشارات المخصص
-├── app.js                          # نقطة الانطلاق وإدارة دورة حياة التطبيق
-├── viewport.js                     # إعداد المشهد ثلاثي الأبعاد، الكاميرا، واستوديو البانوهات
-├── mocap-core.js                   # معالجة وتوزيع إطارات MediaPipe على محركات الحركة
-├── mocap-pose.js                   # ربط وتطويع حركات الجسم والوضعية بعظام الأفاتار
-├── mocap-constraints.js            # الحدود والقيود الفيزيائية والميكانيكية للمفاصل
-├── mocap-filters.js                # مرشحات One-Euro لتنعيم الحركة ومنع الاهتزاز
-├── mocap-idle.js                   # نظام الحركة الحيوية التلقائية للأفاتار (Idle Breathing)
-├── mocap-recorder.js               # مسجل حركات الأفاتار بصيغة Keyframes و BVH
-├── customGestureRecognizer.js      # محرك التعرف الذكي ومطابقة المسافات الهندسية للإشارات
-├── customGestureStore.js           # نظام إدارة ومزامنة البيانات (IndexedDB + Firestore)
-├── firebase-db.js                  # إعداد وتجهيز خدمات Google Firebase Firestore
-├── avaturn_avatar.vrm              # نموذج الأفاتار ثلاثي الأبعاد المجهز افتراضياً
-├── vercel.json                     # إعدادات النشر وتوافقية المتصفحات وتفعيل COOP/COEP
-├── package.json                    # تبعيات ومعلومات المشروع
-├── CONTRIBUTING.md                 # دليل المساهمة في المشروع
-├── CODE_OF_CONDUCT.md              # ميثاق السلوك للمجتمع
-├── SECURITY.md                     # سياسة الأمان والإبلاغ عن الثغرات
-└── LICENSE                         # رخصة الاستخدام (MIT)
+│   ├── assets/                     # High-resolution real application screenshots & banners
+│   │   ├── 01_clean_3d_studio.png  # Clean 3D studio view with VRM avatar
+│   │   ├── 02_developer_inspector.png # Developer console with skeletal joint tree
+│   │   ├── 03_viewport_settings.png # Viewport & lighting settings panel
+│   │   ├── 04_gesture_trainer.png  # Custom gesture trainer dashboard
+│   │   ├── 05_sign_to_text_translator.png # Sign-to-text translation HUD
+│   │   └── 06_text_to_sign_modal.png # Text-to-sign avatar playback modal
+│   ├── ISSUE_TEMPLATE/             # GitHub bug report and feature request templates
+│   └── workflows/ci.yml            # Automated CI linting and validation workflow
+├── index.html                      # Main HTML structure and 3D canvas viewport layout
+├── style.css                       # Modern glassmorphic theme and responsive dashboard styling
+├── trainer.css                     # Gesture trainer, metrics cards, and playback modal styles
+├── app.js                          # Core application lifecycle controller and event router
+├── viewport.js                     # Three.js scene setup, lighting, studio room, and camera
+├── mocap-core.js                   # MediaPipe camera loop and landmark dispatching
+├── mocap-pose.js                   # Skeletal retargeting and bone transformation algorithms
+├── mocap-constraints.js            # Human joint anatomical rotation limits and constraints
+├── mocap-filters.js                # One-Euro filter implementation for noise reduction
+├── mocap-idle.js                   # Natural idle breathing and secondary motion dynamics
+├── mocap-recorder.js               # Keyframe motion recorder and VMD / JSON exporter
+├── customGestureRecognizer.js      # Normalized distance matrix & cosine gesture classifier
+├── customGestureStore.js           # Hybrid data manager (IndexedDB + Cloud Firestore)
+├── firebase-db.js                  # Firebase Firestore cloud initialization and queries
+├── avaturn_avatar.vrm              # Rigged humanoid 3D avatar asset
+├── encoding.min.js                 # Unicode to Shift-JIS binary encoder for VMD files
+├── vercel.json                     # Vercel deployment config with COOP/COEP headers
+├── package.json                    # Project metadata, scripts, and keywords
+├── CONTRIBUTING.md                 # Contribution guidelines for developers and researchers
+├── CODE_OF_CONDUCT.md              # Community code of conduct
+├── SECURITY.md                     # Security reporting policy
+└── LICENSE                         # MIT Open Source License
 ```
 
 ---
 
-## 🤝 المساهمة والتطوير (Contributing)
+## 🤝 Contributing
 
-نرحب بكافة المساهمات من المطورين والمصممين والباحثين! إذا كنت ترغب في تحسين المشروع أو إضافة إشارات جديدة:
-1. راجع [دليل المساهمة (CONTRIBUTING.md)](CONTRIBUTING.md).
-2. افتح [Issue جديد](https://github.com/marwanzidan086-coder/arabic-sign-language-mocap-3d/issues) لمناقشة أفكارك ومقترحاتك.
-3. أرسل Pull Request بتعديلاتك.
+Contributions from developers, AI researchers, 3D artists, and accessibility advocates are warmly welcomed!
+
+1. Read the [Contributing Guidelines (CONTRIBUTING.md)](CONTRIBUTING.md).
+2. Open an [Issue](https://github.com/marwanzidan086-coder/arabic-sign-language-mocap-3d/issues) to discuss proposed features or bug fixes.
+3. Submit a Pull Request with clear descriptions and testing notes.
 
 ---
 
-## 📄 الترخيص (License)
+## 📄 License
 
-هذا المشروع مفتوح المصدر ومرخص بالكامل تحت مظلة ترخيص [MIT License](LICENSE).
+This project is licensed under the [MIT License](LICENSE) — free for academic, personal, and commercial use.
 
 <br/>
 
 <div align="center">
 
-⭐ **إذا نال المشروع إعجابك، نرجو ترك نجمة (Star) على المستودع لدعم استمرار التطوير!** ⭐
+⭐ **If you find this project helpful or inspiring, please give it a Star on GitHub!** ⭐
 
 <br/>
 
 **Designed & Developed with ❤️ for the Deaf & Hard-of-Hearing Community**  
-صُنع بكل فخر وحب لخدمة مجتمع لغة الإشارة العربية وذوي الهمم 🤟
+*Empowering accessibility through real-time Computer Vision & 3D Kinematics* 🤟
 
 </div>
