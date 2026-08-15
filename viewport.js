@@ -74,7 +74,7 @@ export function setupScene() {
     state.scene.add(state.floorPlane);
 
     // Grid (Subtle Crisp Grid Overlay)
-    state.floorGrid = new THREE.GridHelper(14, 14, 0x000000, 0x334155);
+    state.floorGrid = new THREE.GridHelper(14, 10, 0x000000, 0x334155);
     state.floorGrid.position.set(0, 0.002, 0);
     state.floorGrid.visible = state.showGrid;
     state.scene.add(state.floorGrid);
@@ -91,26 +91,26 @@ const ROOM_WIDTH = 14.0;
 const ROOM_DEPTH = 14.0;
 const ROOM_HEIGHT = 5.2;
 
-// --- 1. Clean Open Infinite Studio Environment (الاستوديو الافتراضي الأصلي كما في الصورة) ---
+// --- 1. Clean Open Infinite Studio Environment (الاستوديو الافتراضي المطابق تماماً للصورة 1 و 2) ---
 function createCleanStudio() {
     const group = new THREE.Group();
     group.name = 'CleanStudioRoom';
 
-    // Pure White Floor Plane (مطابق تماماً للشكل الأصلي في الصورة)
-    const floorGeo = new THREE.PlaneGeometry(40, 40);
+    // Pure White Floor Plane (مطابق تماماً للشكل الأصلي في الصورة 1 و 2)
+    const floorGeo = new THREE.PlaneGeometry(14, 14);
     const floorMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         roughness: 0.25,
-        metalness: 0.02
+        metalness: 0.0
     });
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.set(0, 0, 0);
+    floor.position.set(0, 0.001, 0);
     floor.receiveShadow = true;
     group.add(floor);
 
-    // Large Crisp Black/Slate Perspective Grid Lines (مطابقة لشبكة الصورة)
-    const grid = new THREE.GridHelper(30, 16, 0x000000, 0x334155);
+    // Large Crisp Black/Slate Perspective Grid Lines (10 تقسيمات فقط على 14 متر لمربعات واسعة وأنيقة)
+    const grid = new THREE.GridHelper(14, 10, 0x000000, 0x334155);
     grid.position.set(0, 0.002, 0);
     group.add(grid);
 
